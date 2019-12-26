@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "449662353936",
+    "firebase_url": "https://pitbox-app.firebaseio.com",
+    "project_id": "pitbox-app",
+    "storage_bucket": "pitbox-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449662353936:android:9fcb49c7c681af87490095",
+        "android_client_info": {
+          "package_name": "com.bzgroup.pitboxauxiliovehicular"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449662353936-vi8lnsr3kra08p5489vt8c8tal9sevdd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bzgroup.pitboxauxiliovehicular",
+            "certificate_hash": "677cef370c58b7563456f4317a5dd43cd21a8975"
+          }
+        },
+        {
+          "client_id": "449662353936-r3qii9jtk9m92kamhtn498bjs8r3ju47.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyyx1oo3PcR-c4orfyvy7K0aFKuHqMGio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449662353936-r3qii9jtk9m92kamhtn498bjs8r3ju47.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

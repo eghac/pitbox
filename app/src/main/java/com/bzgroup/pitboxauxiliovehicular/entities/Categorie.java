@@ -1,0 +1,27 @@
+package com.bzgroup.pitboxauxiliovehicular.entities;
+
+public class Categorie {
+    private  String nombre;
+    private String image;
+
+    public Categorie(String nombre, String image) {
+        this.nombre = nombre;
+        this.image = image;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+}

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Pit Box Auxilio Vehicular</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="facebook_app_id">1568954819919189</string>
+    <string name="fb_login_protocol_scheme">fb1568954819919189</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_services">Servicios</string>
+</resources>
