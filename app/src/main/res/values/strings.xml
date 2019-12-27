@@ -11,4 +11,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_services">Servicios</string>
+
+    <!--    Service Activity-->
+    <string name="activity_service_stations_denied_location_permission">Para brindarte una mejor experiencia con PitBox Auxilio Mecánico, necesitamos que nos otorgues tu ubicación.</string>
+    <string name="activity_service_stations_denied_location_permission_never_ask_again">Para brindarte una mejor experiencia con PitBox Auxilio Mecánico, necesitamos si o si que nos otorgues tu ubicación.\nEn configuraciones activa los permisos de ubicación.\nAjustes > Permisos > Ubicación.</string>
+    <string name="activity_service_stations_denied_location_settings">Para brindarte una mejor experiencia con PitBox Auxilio Mecánico, necesitamos activar tu GPS.</string>
 </resources>

@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,6 +24,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bzgroup.pitboxauxiliovehicular.R;
 import com.bzgroup.pitboxauxiliovehicular.entities.Categorie;
 import com.bzgroup.pitboxauxiliovehicular.entities.MainMenuItem;
+import com.bzgroup.pitboxauxiliovehicular.menu.CategoriesPresenter;
+import com.bzgroup.pitboxauxiliovehicular.menu.ICategoriesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.menu.adapter.AdapterMainMenu;
 import com.bzgroup.pitboxauxiliovehicular.utils.SingletonVolley;
 
@@ -43,7 +47,7 @@ import static com.bzgroup.pitboxauxiliovehicular.utils.Constants.GLOBAL_URL;
  * {@link MainMenuFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class MainMenuFragment extends Fragment {
+public class MainMenuFragment extends Fragment implements CategoriesView {
 
     private static final String TAG = MainMenuFragment.class.getSimpleName();
 
@@ -56,6 +60,10 @@ public class MainMenuFragment extends Fragment {
     @BindView(R.id.fragment_main_menu_rv)
     RecyclerView recyclerView;
     AdapterMainMenu mAdapter;
+    @BindView(R.id.fragment_main_menu_progress)
+    ProgressBar fragment_main_menu_progress;
+
+    private ICategoriesPresenter mPresenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,6 +79,10 @@ public class MainMenuFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         setupAdapter();
         setupRecycler();
+
+        mPresenter = new CategoriesPresenter(getContext(), this);
+        mPresenter.onCreate();
+        mPresenter.handleCategories();
     }
 
     private void setupRecycler() {
@@ -81,61 +93,8 @@ public class MainMenuFragment extends Fragment {
     }
 
     private void setupAdapter() {
-
-        requestMenu();
-
-        List<MainMenuItem> mItems = new ArrayList<>();
-        mItems.add(new MainMenuItem(getResources().getDrawable(R.drawable.ic_grupo_957), "Auxilio mecánico"));
-        mItems.add(new MainMenuItem(getResources().getDrawable(R.drawable.ic_grupo_956), "Conductor designado"));
-        mItems.add(new MainMenuItem(getResources().getDrawable(R.drawable.ic_grupo_946), "Lavado a domicilio"));
-        mItems.add(new MainMenuItem(getResources().getDrawable(R.drawable.ic_grupo_973), "Mantenimiento a domicilio"));
-        mItems.add(new MainMenuItem(getResources().getDrawable(R.drawable.ic_grupo_974), "Estaciones de servicio"));
         mAdapter = new AdapterMainMenu(getContext(), new ArrayList<>());
-    }
-
-    private static final String URL_MENU = GLOBAL_URL + "categorias";
-
-    private void requestMenu() {
-        Log.d(TAG, "requestMenu: ");
-        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(
-                Request.Method.GET, URL_MENU, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d(TAG, "onResponse: ");
-                        try {
-                            loadRequestCategories(response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: ", error);
-                    }
-                }
-        );
-        SingletonVolley.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
-    }
-
-    private void loadRequestCategories(JSONArray response) throws JSONException {
-        List<Categorie> categories = new ArrayList<>();
-        for (int i = 0; i < response.length(); i++) {
-            JSONObject categorie = response.getJSONObject(i);
-            JSONObject image = categorie.getJSONObject("icono");
-            categories.add(new Categorie(
-                    categorie.getString("nombre"),
-                    image.getString("url")
-            ));
-        }
-        if (categories.size() > 0) {
-            Log.d(TAG, "loadRequestCategories: " + categories.size());
-            mAdapter.add(categories);
-        } else {
-
-        }
+//        requestMenu();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -160,6 +119,27 @@ public class MainMenuFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mPresenter.onDestroy();
+    }
+
+    @Override
+    public void showProgress() {
+        fragment_main_menu_progress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgress() {
+        fragment_main_menu_progress.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void providerCategories(List<Categorie> categories) {
+        mAdapter.add(categories);
+    }
+
+    @Override
+    public void providerCategoriesEmpty() {
+        Toast.makeText(getContext(), "Sin categorías.", Toast.LENGTH_SHORT).show();
     }
 
     /**

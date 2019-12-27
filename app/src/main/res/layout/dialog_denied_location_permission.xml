@@ -1,0 +1,76 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:xmls="http://schemas.android.com/apk/res/android"
+    xmls:layout_width="match_parent"
+    xmls:layout_height="match_parent"
+    xmls:background="@android:color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmls:id="@+id/constraintLayout21"
+        xmls:layout_width="match_parent"
+        xmls:layout_height="64dp"
+        xmls:background="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            xmls:id="@+id/imageView26"
+            xmls:layout_width="40dp"
+            xmls:layout_height="40dp"
+            xmls:layout_marginStart="16dp"
+            xmls:src="@drawable/ic_route"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            xmls:layout_marginLeft="16dp" />
+
+        <TextView
+            xmls:id="@+id/textView76"
+            xmls:layout_width="wrap_content"
+            xmls:layout_height="wrap_content"
+            xmls:layout_marginStart="16dp"
+            xmls:text="PERMISO RECHAZADO"
+            xmls:textStyle="bold"
+            xmls:textColor="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView26"
+            app:layout_constraintTop_toTopOf="parent"
+            xmls:layout_marginLeft="16dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        xmls:id="@+id/txt_diaglog_permission"
+        xmls:layout_width="wrap_content"
+        xmls:layout_height="wrap_content"
+        xmls:fontFamily="@font/roboto_regular"
+        xmls:textColor="@android:color/black"
+        xmls:paddingTop="32dp"
+        xmls:paddingBottom="32dp"
+        xmls:paddingStart="16dp"
+        xmls:paddingEnd="16dp"
+        xmls:text="Para brindarle una mejor experiencia en Go Constructor, necesitamos tu ubicación."
+        xmls:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout21" />
+
+    <View
+        xmls:id="@+id/divider14"
+        xmls:layout_width="0dp"
+        xmls:layout_height="1dp"
+        xmls:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txt_diaglog_permission" />
+
+    <View
+        xmls:id="@+id/divider15"
+        xmls:layout_width="395dp"
+        xmls:layout_height="1dp"
+        xmls:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_diaglog_permission" />
+</androidx.constraintlayout.widget.ConstraintLayout>

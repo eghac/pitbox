@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+//import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.bzgroup.pitboxauxiliovehicular.MainActivity;
 import com.bzgroup.pitboxauxiliovehicular.R;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
 
 public class AdapterMainMenu extends RecyclerView.Adapter<AdapterMainMenu.ViewHolder> {
 
-//    private List<MainMenuItem> mItems;
+    //    private List<MainMenuItem> mItems;
     private List<Categorie> mItems;
     private Context mContext;
 
@@ -62,7 +63,9 @@ public class AdapterMainMenu extends RecyclerView.Adapter<AdapterMainMenu.ViewHo
         holder.fragment_main_menu_container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.getContext().startActivity(new Intent(v.getContext(), ServicesActivity.class));
+                Intent intent = new Intent(v.getContext(), ServicesActivity.class);
+                intent.putExtra("CATEGORIE_ID", item.getId());
+                v.getContext().startActivity(intent);
             }
         });
     }
