@@ -17,6 +17,11 @@ public class Service {
         this.icono = icono;
     }
 
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
     public String getId() {
         return id;
     }

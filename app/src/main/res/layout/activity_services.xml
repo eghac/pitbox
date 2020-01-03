@@ -2,12 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".services.ui.ServicesActivity" android:layout_height="match_parent"
-     android:layout_width="match_parent"><![CDATA[
-
-    >
-
-    ]]>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/activity_services_spinner"
+    tools:context=".services.ui.ServicesActivity">
 
     <fragment
         android:id="@+id/map"
@@ -29,8 +27,35 @@
         android:background="#292E42"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.0"
+        map:layout_constraintHorizontal_bias="1.0"
         map:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/activity_services_base_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="50"
+            android:textColor="@android:color/white"
+            android:textSize="50dp"
+            map:layout_constraintBottom_toTopOf="@+id/activity_services_request_btn"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <Spinner
+            android:id="@+id/activity_services_spinner_myvehicles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/activity_services_request_btn"
@@ -52,13 +77,14 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="24dp"
             android:text="Costo aproximado del servicio"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            map:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             map:layout_constraintEnd_toEndOf="parent"
-            map:layout_constraintStart_toStartOf="parent" />
+            map:layout_constraintHorizontal_bias="0.505"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/activity_service_schedule" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -66,6 +92,7 @@
             android:layout_height="100dp"
             android:layout_marginBottom="16dp"
             android:background="#353952"
+            android:visibility="gone"
             map:layout_constraintBottom_toTopOf="@+id/activity_services_request_btn"
             map:layout_constraintEnd_toEndOf="parent"
             map:layout_constraintStart_toStartOf="parent">
@@ -81,16 +108,6 @@
                 map:layout_constraintStart_toStartOf="parent"
                 map:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/activity_services_base_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textColor="#84899D"
-                map:layout_constraintBottom_toBottomOf="parent"
-                map:layout_constraintEnd_toEndOf="parent"
-                map:layout_constraintStart_toStartOf="parent"
-                map:layout_constraintTop_toBottomOf="@+id/textView3" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -99,13 +116,37 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:visibility="gone"
             map:layout_constraintBottom_toTopOf="@+id/textView2"
             map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.0"
+            map:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/activity_services_spinner_services"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            map:layout_constraintBottom_toBottomOf="@+id/activity_service_schedule"
+            map:layout_constraintEnd_toStartOf="@+id/activity_service_schedule"
             map:layout_constraintStart_toStartOf="parent"
-            map:layout_constraintTop_toTopOf="parent" />
+            map:layout_constraintTop_toTopOf="@+id/activity_service_schedule" />
+
+        <ImageView
+            android:id="@+id/activity_service_schedule"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/ic_access_time_white_24dp"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/activity_services_spinner_myvehicles" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

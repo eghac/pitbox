@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/menu_top"
+        android:checkableBehavior="single">
+        <item android:title="Proveedores">
+            <menu>
+                <item
+                    android:id="@+id/nav_wholesalers"
+                    android:icon="@drawable/ic_checked"
+                    android:title="Mayoristas" />
+
+                <item
+                    android:id="@+id/nav_dealers"
+                    android:icon="@drawable/ic_person_black_24dp"
+                    android:title="Distribuidores" />
+            </menu>
+        </item>
+    </group>
+
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_off"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="Cerrar sesión" />
+    </group>
+</menu>

@@ -23,22 +23,25 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.bzgroup.pitboxauxiliovehicular.R;
 import com.bzgroup.pitboxauxiliovehicular.ServiceRequestScreen.ServiceRequestActivity;
 import com.bzgroup.pitboxauxiliovehicular.dialogs.DeniedLocationPersmissionDialogFragment;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.services.IServicesPresenter;
+import com.bzgroup.pitboxauxiliovehicular.services.ServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.adapter.AdapterServices;
+import com.bzgroup.pitboxauxiliovehicular.services.modals.ScheduleBottomSheetDialog;
 import com.bzgroup.pitboxauxiliovehicular.utils.IOnItemClickListener;
 import com.bzgroup.pitboxauxiliovehicular.utils.Permission;
-import com.bzgroup.pitboxauxiliovehicular.utils.SingletonVolley;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -56,10 +59,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -68,9 +67,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.bzgroup.pitboxauxiliovehicular.utils.Constants.GLOBAL_URL;
-
-public class ServicesActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, DeniedLocationPersmissionDialogFragment.DeniedLocationPersmissionDialogFragmentListener, IOnItemClickListener {
+public class ServicesActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, DeniedLocationPersmissionDialogFragment.DeniedLocationPersmissionDialogFragmentListener, IOnItemClickListener, AdapterView.OnItemSelectedListener, IServicesView, ScheduleBottomSheetDialog.ScheduleBottomSheetDialogListener {
 
     public static final String TAG = ServicesActivity.class.getSimpleName();
 
@@ -83,6 +80,11 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
 
     private FusedLocationProviderClient mFusedLocationClient;
 
+    @BindView(R.id.activity_services_spinner_myvehicles)
+    Spinner activity_services_spinner_myvehicles;
+    @BindView(R.id.activity_services_spinner_services)
+    Spinner activity_services_spinner_services;
+
     @BindView(R.id.activity_services_request_btn)
     Button activity_services_request_btn;
     @BindView(R.id.activity_services_progress)
@@ -93,7 +95,8 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
     RecyclerView recyclerView;
     AdapterServices mAdapter;
 
-    private String serviceId;
+    private String categorieId;
+    private IServicesPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,14 +110,25 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        serviceId = getIntent().getStringExtra("CATEGORIE_ID");
+        categorieId = getIntent().getStringExtra("CATEGORIE_ID");
 
         if (!Permission.validateLocationPermissions(getApplicationContext()))
             Permission.requestLocationPermissions(this);
         else
             locationStart();
+
+        mPresenter = new ServicesPresenter(this);
+        mPresenter.onCreate();
+        mPresenter.handleMyVehicles();
+
         setupAdapter();
         setupRecycler();
+        setupSpinnerListeners();
+    }
+
+    private void setupSpinnerListeners() {
+        activity_services_spinner_myvehicles.setOnItemSelectedListener(this);
+        activity_services_spinner_services.setOnItemSelectedListener(this);
     }
 
     private void setupRecycler() {
@@ -126,55 +140,9 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
 
     private void setupAdapter() {
         mAdapter = new AdapterServices(this, new ArrayList<>(), this);
-        requestServices();
+//        requestServices();
     }
 
-    private static final String URL_SERVICES = GLOBAL_URL + "categorias/";
-
-    private void requestServices() {
-        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(
-                Request.Method.GET, URL_SERVICES + serviceId + "/servicios", null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            loadRequestServices(response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: ", error);
-                    }
-                }
-        );
-        SingletonVolley.getInstance(this).addToRequestQueue(jsonObjectRequest);
-    }
-
-    private void loadRequestServices(JSONArray response) throws JSONException {
-        List<Service> services = new ArrayList<>();
-        for (int i = 0; i < response.length(); i++) {
-            JSONObject service = response.getJSONObject(i);
-            JSONObject image = service.getJSONObject("icono");
-            services.add(new Service(
-                    service.getString("id"),
-                    service.getString("nombre"),
-                    service.getString("descripcion"),
-                    service.getString("precio_base"),
-                    service.getString("incremento_horario"),
-                    image.getString("url")
-            ));
-        }
-        if (services.size() > 0) {
-//            Log.d(TAG, "loadRequestCategories: " + categories.size());
-            mAdapter.add(services);
-        } else {
-
-        }
-    }
 
     public void locationStart() {
         if (!verificarGPS_Activo()) {
@@ -259,6 +227,12 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -400,12 +374,13 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     private Service service;
+
     @Override
     public void onItemClick(Object object) {
-        if (object instanceof Service) {
-            service = (Service) object;
-            activity_services_base_price.setText(service.getPrecioBase());
-        }
+//        if (object instanceof Service) {
+//            service = (Service) object;
+//            activity_services_base_price.setText(service.getPrecioBase());
+//        }
     }
 
     @Override
@@ -413,12 +388,38 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
 
     }
 
-    private void showProgress() {
+    @Override
+    public void showProgress() {
         activity_services_progress.setVisibility(View.VISIBLE);
     }
 
-    private void hideProgress() {
+    @Override
+    public void hideProgress() {
         activity_services_progress.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void providerMyVehicles(List<Vehicle> myVehicles) {
+        ArrayAdapter<Vehicle> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.simple_spinner_dropdown_item_eliot, myVehicles);
+//        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_eliot);
+        activity_services_spinner_myvehicles.setAdapter(adapter);
+    }
+
+    @Override
+    public void providerServices(List<Service> services) {
+        ArrayAdapter<Service> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.simple_spinner_dropdown_item_eliot, services);
+//        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_eliot);
+        activity_services_spinner_services.setAdapter(adapter);
+    }
+
+    @Override
+    public void providerServicesEmpty() {
+
+    }
+
+    @Override
+    public void providerMyVehiclesEmpty() {
+
     }
 
     private void enabledInputs() {
@@ -439,6 +440,41 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
             startActivity(new Intent(getApplicationContext(), ServiceRequestActivity.class));
             finish();
         }
+    }
+
+    @OnClick(R.id.activity_service_schedule)
+    public void handleScheduleService() {
+        ScheduleBottomSheetDialog scheduleBottomSheetDialog = new ScheduleBottomSheetDialog();
+        scheduleBottomSheetDialog.show(getSupportFragmentManager(), "scheduleBottomSheetDialog");
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        int spinnerId = parent.getId();
+        Object object = parent.getItemAtPosition(position);
+        switch (spinnerId) {
+            case R.id.activity_services_spinner_myvehicles:
+                if (object instanceof Vehicle) {
+                    mPresenter.handleServices(categorieId);
+                }
+                break;
+            case R.id.activity_services_spinner_services:
+                if (object instanceof Service) {
+                    service = (Service) object;
+                    activity_services_base_price.setText(service.getPrecioBase());
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void onScheduleButtonClick(String time, String data) {
+        Toast.makeText(this, time + " / " + data, Toast.LENGTH_SHORT).show();
     }
 
     public class A extends AsyncTask<Void, Void, Void> {
