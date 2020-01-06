@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -95,7 +96,11 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
     RecyclerView recyclerView;
     AdapterServices mAdapter;
 
+    @BindView(R.id.activity_service_schedule)
+    ImageView activity_service_schedule;
+
     private String categorieId;
+    private boolean isSchedule;
     private IServicesPresenter mPresenter;
 
     @Override
@@ -111,6 +116,7 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment.getMapAsync(this);
 
         categorieId = getIntent().getStringExtra("CATEGORIE_ID");
+        isSchedule = getIntent().getBooleanExtra("IS_SCHEDULE", false);
 
         if (!Permission.validateLocationPermissions(getApplicationContext()))
             Permission.requestLocationPermissions(this);
@@ -124,6 +130,14 @@ public class ServicesActivity extends FragmentActivity implements OnMapReadyCall
         setupAdapter();
         setupRecycler();
         setupSpinnerListeners();
+        setupLayout();
+    }
+
+    private void setupLayout() {
+        if (isSchedule)
+            activity_service_schedule.setVisibility(View.VISIBLE);
+        else
+            activity_service_schedule.setVisibility(View.VISIBLE);
     }
 
     private void setupSpinnerListeners() {

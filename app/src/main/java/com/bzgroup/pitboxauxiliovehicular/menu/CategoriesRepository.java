@@ -71,7 +71,8 @@ public class CategoriesRepository implements ICategoriesRepository {
             categories.add(new Categorie(
                     categorie.getString("id"),
                     categorie.getString("nombre"),
-                    image.getString("url")
+                    image.getString("url"),
+                    categorie.getBoolean("programable")
             ));
         }
         if (categories.size() > 0) {

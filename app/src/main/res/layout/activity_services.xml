@@ -66,7 +66,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:background="#FFB804"
+            android:background="@color/colorBtn"
             android:text="PEDIR"
             android:textColor="@android:color/white"
             map:layout_constraintBottom_toBottomOf="parent"

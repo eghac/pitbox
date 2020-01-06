@@ -65,6 +65,7 @@ public class AdapterMainMenu extends RecyclerView.Adapter<AdapterMainMenu.ViewHo
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ServicesActivity.class);
                 intent.putExtra("CATEGORIE_ID", item.getId());
+                intent.putExtra("IS_SCHEDULE", item.isProgramable());
                 v.getContext().startActivity(intent);
             }
         });

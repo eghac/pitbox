@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="colorBtn">#FBBB01</color>
+<!--    <color name="colorPrimary">#008577</color>-->
+    <color name="colorPrimary">#CD222A</color>
+<!--    <color name="colorPrimaryDark">#00574B</color>-->
+    <color name="colorPrimaryDark">#CD222A</color>
+<!--    <color name="colorAccent">#D81B60</color>-->
+    <color name="colorAccent">#FBBB01</color>
+    <color name="colorBtn">#CD222A</color>
 </resources>

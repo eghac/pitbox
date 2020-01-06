@@ -6,11 +6,27 @@ public class Categorie implements Serializable {
     private String id;
     private  String nombre;
     private String image;
+    private boolean programable;
+
+    public Categorie(String id, String nombre, String image, boolean programable) {
+        this.id = id;
+        this.nombre = nombre;
+        this.image = image;
+        this.programable = programable;
+    }
 
     public Categorie(String id, String nombre, String image) {
         this.id = id;
         this.nombre = nombre;
         this.image = image;
+    }
+
+    public boolean isProgramable() {
+        return programable;
+    }
+
+    public void setProgramable(boolean programable) {
+        this.programable = programable;
     }
 
     public String getId() {
