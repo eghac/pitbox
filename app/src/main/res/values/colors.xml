@@ -7,4 +7,7 @@
 <!--    <color name="colorAccent">#D81B60</color>-->
     <color name="colorAccent">#FBBB01</color>
     <color name="colorBtn">#CD222A</color>
+
+    <color name="colorBackgroundApp">#e6eaea</color>
+    <color name="main_profile">#1B1B2F</color>
 </resources>

@@ -12,4 +12,6 @@ public interface CategoriesView {
     void providerCategories(List<Categorie> categories);
 
     void providerCategoriesEmpty();
+
+    void showCategoriesErrorMessage(String errorMessage);
 }

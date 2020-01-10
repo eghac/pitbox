@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.bzgroup.pitboxauxiliovehicular.MainActivity;
 import com.bzgroup.pitboxauxiliovehicular.R;
+import com.bzgroup.pitboxauxiliovehicular.accesstype.AccessTypePresenter;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -39,6 +40,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.bzgroup.pitboxauxiliovehicular.utils.Utils.isLoggedInFacebook;
+import static com.bzgroup.pitboxauxiliovehicular.utils.Utils.isLogginFirebaseWithGoogle;
+import static com.bzgroup.pitboxauxiliovehicular.utils.Utils.logoutInFacebook;
+import static com.bzgroup.pitboxauxiliovehicular.utils.Utils.logoutInFirebase;
+
 public class AccessTypeActivity extends AppCompatActivity implements IAccessTypeView {
 
     private static final int RC_SIGN_IN = 111;
@@ -58,6 +64,8 @@ public class AccessTypeActivity extends AppCompatActivity implements IAccessType
 
     CallbackManager callbackManager;
 
+    private AccessTypePresenter mPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +77,9 @@ public class AccessTypeActivity extends AppCompatActivity implements IAccessType
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        mPresenter = new AccessTypePresenter(this);
+        mPresenter.onCreate();
 
         setupGoogleSignIn();
         setupFirebaseAuth();
@@ -119,18 +130,36 @@ public class AccessTypeActivity extends AppCompatActivity implements IAccessType
     private void updateUIF(FirebaseUser currentUser) {
         if (currentUser != null) {
 //            Toast.makeText(this, "Está autenticado", Toast.LENGTH_SHORT).show();
-//            Log.d(TAG, "updateUIF DisplayName: " + currentUser.getDisplayName());
-//            Log.d(TAG, "updateUIF Email: " + currentUser.getEmail());
-//            Log.d(TAG, "updateUIF PhoneNumber: " + currentUser.getPhoneNumber());
-//            Log.d(TAG, "updateUIF Uid: " + currentUser.getUid());
-//            Log.d(TAG, "updateUIF ProviderId: " + currentUser.getProviderId());
-//            Log.d(TAG, "updateUIF PhotoUrl: " + currentUser.getPhotoUrl());
-//            Log.d(TAG, "updateUIF PhotoUrl: " + currentUser.getIdToken(true));
-            navigateToMainScreen();
+            Log.d(TAG, "updateUIF DisplayName: " + currentUser.getDisplayName());
+            Log.d(TAG, "updateUIF Email: " + currentUser.getEmail());
+            Log.d(TAG, "updateUIF PhoneNumber: " + currentUser.getPhoneNumber());
+            Log.d(TAG, "updateUIF Uid: " + currentUser.getUid());
+            Log.d(TAG, "updateUIF ProviderId: " + currentUser.getProviderId());
+            Log.d(TAG, "updateUIF PhotoUrl: " + currentUser.getPhotoUrl());
+            Log.d(TAG, "updateUIF getIdToken: " + currentUser.getIdToken(true));
+
+            mPresenter.handleSignInFirebase(currentUser.getUid(),
+                    currentUser.getEmail(), currentUser.getDisplayName(), "", currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "");
+//            navigateToMainScreen();
         } else {
             // El usuario NO se logueó en la app con Google
             Toast.makeText(this, "No está autenticado", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showErrorMessage(String errorMessage) {
+        if (isLoggedInFacebook()) {
+            logoutInFacebook(this);
+        } else if (isLogginFirebaseWithGoogle()) {
+            logoutInFirebase(this);
+        }
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {

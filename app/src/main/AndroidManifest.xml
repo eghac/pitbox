@@ -20,7 +20,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ServiceRequestScreen.ServiceRequestActivity"></activity>
+        <activity
+            android:name=".vehicles.ui.MyVehiclesActivity"
+            android:label="@string/title_activity_my_vehicles"
+            android:parentActivityName=".mainprofile.ui.MainProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bzgroup.pitboxauxiliovehicular.mainprofile.ui.MainProfileActivity" />
+        </activity>
+        <activity
+            android:name=".mainprofile.ui.MainProfileActivity"
+            android:label="@string/title_activity_main_profile"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bzgroup.pitboxauxiliovehicular.MainActivity" />
+        </activity>
+        <activity android:name=".ServiceRequestScreen.ServiceRequestActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -35,7 +53,8 @@
 
         <activity
             android:name=".services.ui.ServicesActivity"
-            android:label="@string/title_activity_services">
+            android:label="@string/title_activity_services"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bzgroup.pitboxauxiliovehicular.MainActivity" />
@@ -71,7 +90,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name" />
     </application>
 
 </manifest>

@@ -50,9 +50,19 @@ public class CategoriesPresenter implements ICategoriesPresenter {
             case CategorieEvent.CATEGORIES_SUCCESS:
                 categoriesSuccess(categorieEvent.getCategories());
                 break;
+            case CategorieEvent.CATEGORIES_ERROR:
+                categoriesError(categorieEvent.getErrorMessage());
+                break;
             case CategorieEvent.CATEGORIES_EMPTY:
                 categoriesEmpty();
                 break;
+        }
+    }
+
+    private void categoriesError(String errorMessage) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.showCategoriesErrorMessage(errorMessage);
         }
     }
 

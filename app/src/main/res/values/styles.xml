@@ -11,7 +11,7 @@
     </style>
 
     <style name="MainActivityTheme" parent="Theme.AppCompat.Light">
-<!--        <item name="android:textColorPrimary">@color/my_text_color</item>-->
+        <!--        <item name="android:textColorPrimary">@color/my_text_color</item>-->
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="windowActionBarOverlay">true</item>
     </style>
@@ -45,4 +45,9 @@
     </style>
 
     <dimen name="smallTxtSize">8dp</dimen>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

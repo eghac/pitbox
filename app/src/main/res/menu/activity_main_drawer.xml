@@ -3,23 +3,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group
-        android:id="@+id/menu_top"
-        android:checkableBehavior="single">
-        <item android:title="Proveedores">
-            <menu>
-                <item
-                    android:id="@+id/nav_wholesalers"
-                    android:icon="@drawable/ic_checked"
-                    android:title="Mayoristas" />
 
-                <item
-                    android:id="@+id/nav_dealers"
-                    android:icon="@drawable/ic_person_black_24dp"
-                    android:title="Distribuidores" />
-            </menu>
-        </item>
-    </group>
+        <item
+            android:id="@+id/nav_request_service"
+            android:icon="@drawable/ic_checked"
+            android:title="Solicitar servicio" />
+
+        <item
+            android:id="@+id/nav_guide"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Guía" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Mi perfil" />
+
+
+<!--    <group-->
+<!--        android:id="@+id/menu_top"-->
+<!--        android:checkableBehavior="single">-->
+<!--        <item android:title="">-->
+<!--            <menu>-->
+<!--                <item-->
+<!--                    android:id="@+id/nav_request_service"-->
+<!--                    android:icon="@drawable/ic_checked"-->
+<!--                    android:title="Solicitar servicio" />-->
+
+<!--                <item-->
+<!--                    android:id="@+id/nav_guide"-->
+<!--                    android:icon="@drawable/ic_person_black_24dp"-->
+<!--                    android:title="Guía" />-->
+
+<!--                <item-->
+<!--                    android:id="@+id/nav_profile"-->
+<!--                    android:icon="@drawable/ic_person_black_24dp"-->
+<!--                    android:title="Mi perfil" />-->
+<!--            </menu>-->
+<!--        </item>-->
+<!--    </group>-->
 
     <group
         android:id="@+id/menu_bottom"

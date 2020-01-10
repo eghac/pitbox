@@ -2,6 +2,7 @@ package com.bzgroup.pitboxauxiliovehicular.services;
 
 import android.content.Context;
 
+import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
@@ -62,6 +63,7 @@ public class ServicesPresenter implements IServicesPresenter {
                 myVehiclesSuccess(services.getMyVehicles());
                 break;
             case ServicesEvent.SERVICES_MYVEHICLES_EMPTY:
+                servicesMyVehiclesEmpty(services.getErrorMessage());
                 break;
             case ServicesEvent.SERVICES_MYVEHICLES_ERROR:
                 break;
@@ -72,7 +74,70 @@ public class ServicesPresenter implements IServicesPresenter {
                 break;
             case ServicesEvent.SERVICES_ERROR:
                 break;
+            case ServicesEvent.SERVICES_ADDRESS_EMPTY:
+                servicesAddressEmpty(services.getErrorMessage());
+                break;
+            case ServicesEvent.SERVICES_ADDRESS_SUCCESS:
+                addressSuccess(services.getAddresses());
+                break;
+            case ServicesEvent.SERVICES_ADD_ADDRESS_SUCCESS:
+                addAddressSuccess(services.getErrorMessage());
+                break;
+            case ServicesEvent.SERVICES_ADD_ADDRESS_ERROR:
+                addAddressError(services.getErrorMessage());
+                break;
         }
+    }
+
+    private void addAddressError(String errorMessage) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.addAddressError(errorMessage);
+        }
+    }
+
+    private void addAddressSuccess(String message) {
+        if(mView != null) {
+            mView.hideProgress();
+            mView.addAddressSuccess(message);
+        }
+    }
+
+    private void addressSuccess(List<Address> addresses) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.hideContainerEmptyMyAddress();
+            mView.providerAddress(addresses);
+        }
+    }
+
+    private void servicesMyVehiclesEmpty(String errorMessage) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.providerMyVehiclesEmpty(errorMessage);
+        }
+    }
+
+    private void servicesAddressEmpty(String errorMessage) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.showContainerEmptyMyAddress();
+            mView.providerMyAddressIsEmpty(errorMessage);
+        }
+    }
+
+    @Override
+    public void handleMyAddress() {
+        if (mView != null)
+            mView.showProgress();
+        mRepository.handleMyAddress();
+    }
+
+    @Override
+    public void handleAddAddress(double latitude, double longitude, String description) {
+        if (mView != null)
+            mView.showProgress();
+        mRepository.handleAddAddress(latitude, longitude, description);
     }
 
     private void servicesSucess(List<Service> services) {

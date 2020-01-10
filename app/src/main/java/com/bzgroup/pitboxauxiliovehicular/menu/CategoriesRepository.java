@@ -48,6 +48,7 @@ public class CategoriesRepository implements ICategoriesRepository {
                             loadRequestCategories(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            postEvent(CategorieEvent.CATEGORIES_ERROR, null, e.getMessage());
                         }
                     }
                 },

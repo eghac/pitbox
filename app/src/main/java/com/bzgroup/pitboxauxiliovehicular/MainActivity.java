@@ -5,10 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.bzgroup.pitboxauxiliovehicular.accesstype.ui.AccessTypeActivity;
 import com.bzgroup.pitboxauxiliovehicular.menu.ui.MainMenuFragment;
+import com.bzgroup.pitboxauxiliovehicular.mainprofile.ui.MainProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
@@ -20,8 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import butterknife.ButterKnife;
 
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (isLoggedInFacebook()) {
             logoutInFacebook(this);
         } else if (isLogginFirebaseWithGoogle()) {
-            logoutInFirebase();
+            logoutInFirebase(this);
         }
         startActivity(new Intent(this, AccessTypeActivity.class));
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -152,11 +150,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                else
 //                    Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_LONG).show();
 //                break;
+            case R.id.nav_request_service:
+                fragment = new MainMenuFragment();
+                break;
+            case R.id.nav_guide:
+                break;
+            case R.id.nav_profile:
+                startActivity(new Intent(this, MainProfileActivity.class));
+                break;
             case R.id.nav_sign_off:
                 signOut();
-                break;
-            case 9:
-                fragment = new MainMenuFragment();
                 break;
         }
         if (fragment != null) {

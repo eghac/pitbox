@@ -13,4 +13,8 @@ public interface IServicesPresenter {
     void handleServices(String categorieId);
 
     void onEventMainThread(ServicesEvent services);
+
+    void handleMyAddress();
+
+    void handleAddAddress(double latitude, double longitude, String description);
 }
