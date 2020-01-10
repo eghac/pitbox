@@ -20,6 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".IntroActivity">
+
+        </activity>
+        <activity
+            android:name=".myaddress.ui.MyAddressActivyt"
+            android:label="@string/title_activity_my_address_activyt"
+            android:parentActivityName=".mainprofile.ui.MainProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bzgroup.pitboxauxiliovehicular.mainprofile.ui.MainProfileActivity" />
+        </activity>
         <activity
             android:name=".addvehicle.ui.AddVehicleActivity"
             android:label="@string/title_activity_add_vehicle"

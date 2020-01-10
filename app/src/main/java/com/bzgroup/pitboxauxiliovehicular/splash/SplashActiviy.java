@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
+import com.bzgroup.pitboxauxiliovehicular.IntroActivity;
 import com.bzgroup.pitboxauxiliovehicular.MainActivity;
 import com.bzgroup.pitboxauxiliovehicular.R;
 import com.bzgroup.pitboxauxiliovehicular.accesstype.ui.AccessTypeActivity;
@@ -54,6 +55,7 @@ public class SplashActiviy extends AppCompatActivity {
             startActivity(new Intent(this, MainActivity.class));
         else
             startActivity(new Intent(this, AccessTypeActivity.class));
+//            startActivity(new Intent(this, IntroActivity.class));
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }

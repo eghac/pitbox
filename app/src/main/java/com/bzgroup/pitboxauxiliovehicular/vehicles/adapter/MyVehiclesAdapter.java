@@ -1,25 +1,17 @@
 package com.bzgroup.pitboxauxiliovehicular.vehicles.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bzgroup.pitboxauxiliovehicular.R;
-import com.bzgroup.pitboxauxiliovehicular.entities.Categorie;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
-import com.bzgroup.pitboxauxiliovehicular.services.ui.ServicesActivity;
-import com.bzgroup.pitboxauxiliovehicular.utils.Constants;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
 
@@ -52,26 +44,19 @@ public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        MainMenuItem item = mItems.get(position);
-        Vehicle item = mItems.get(position);
-//        holder.fragment_main_menu_item_img.setImageDrawable(item.getImage());
-//        Glide.with(mContext)
-//                .load(Constants.IMAGE_URL + item.getImage())
-//                .into(holder.fragment_main_menu_item_img);
-//        holder.fragment_main_menu_item_txt.setText(item.getNombre());
-//        holder.fragment_main_menu_container.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(v.getContext(), ServicesActivity.class);
-//                intent.putExtra("CATEGORIE_ID", item.getId());
-//                intent.putExtra("IS_SCHEDULE", item.isProgramable());
-//                v.getContext().startActivity(intent);
-//            }
-//        });
+        Vehicle vehicle = mItems.get(position);
+
+        holder.fragment_myvehicle_item_description.setText(vehicle.getAlias());
+        holder.fragment_myvehicle_item_license_plate.setText(vehicle.getPlaca());
+        holder.fragment_myvehicle_item_brand.setText(vehicle.getMarca());
+        holder.fragment_myvehicle_item_model.setText(vehicle.getModelo());
+        holder.fragment_myvehicle_item_year.setText(vehicle.getAnho());
+//        holder.fragment_myvehicle_item_color.setText(vehicle.getco());
+        holder.fragment_myvehicle_item_type_vehicle.setText(vehicle.getTipo_vehiculo_id());
         holder.activity_my_vehicles_item_container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "hola", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(v.getContext(), "hola", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -82,14 +67,29 @@ public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        //        @BindView(R.id.fragment_main_menu_item_img)
-//        ImageView fragment_main_menu_item_img;
-//        @BindView(R.id.fragment_main_menu_item_txt)
-//        TextView fragment_main_menu_item_txt;
-//        @BindView(R.id.fragment_main_menu_container)
-//        ConstraintLayout fragment_main_menu_container;
         @BindView(R.id.activity_my_vehicles_item_container)
-        CardView activity_my_vehicles_item_container;
+        ConstraintLayout activity_my_vehicles_item_container;
+
+        @BindView(R.id.fragment_myvehicle_item_description)
+        TextView fragment_myvehicle_item_description;
+
+        @BindView(R.id.fragment_myvehicle_item_license_plate)
+        TextView fragment_myvehicle_item_license_plate;
+
+        @BindView(R.id.fragment_myvehicle_item_brand)
+        TextView fragment_myvehicle_item_brand;
+
+        @BindView(R.id.fragment_myvehicle_item_model)
+        TextView fragment_myvehicle_item_model;
+
+        @BindView(R.id.fragment_myvehicle_item_year)
+        TextView fragment_myvehicle_item_year;
+
+        @BindView(R.id.fragment_myvehicle_item_color)
+        TextView fragment_myvehicle_item_color;
+
+        @BindView(R.id.fragment_myvehicle_item_type_vehicle)
+        TextView fragment_myvehicle_item_type_vehicle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.AddVehicleActivity;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.IVehiclesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.VehiclesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.adapter.MyVehiclesAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,25 +66,11 @@ public class MyVehiclesActivity extends AppCompatActivity implements VehiclesVie
         mPresenter = new VehiclesPresenter(this);
         mPresenter.onCreate();
         mPresenter.handleMyVehicles();
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                        .setAction("Action", null).show();
-//                startActivity(new Intent(MyVehiclesActivity.this, AddVehicleActivity.class));
-//            }
-//        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setupAdapter() {
-
         List<Vehicle> vehicles = new ArrayList<>();
-//        vehicles.add(new Vehicle());
-//        vehicles.add(new Vehicle());
-//        vehicles.add(new Vehicle());
-//        vehicles.add(new Vehicle());
         mAdapter = new MyVehiclesAdapter(this, vehicles);
     }
 
@@ -150,6 +134,13 @@ public class MyVehiclesActivity extends AppCompatActivity implements VehiclesVie
                 }
             }
         });
+    }
+
+    @Override
+    public void providerMyVehicles(List<Vehicle> vehicles) {
+        mAdapter.add(vehicles);
+        activity_my_vehicles_is_empty_container.setVisibility(View.GONE);
+        activity_my_vehicles_rv.setVisibility(View.VISIBLE);
     }
 
     @Override

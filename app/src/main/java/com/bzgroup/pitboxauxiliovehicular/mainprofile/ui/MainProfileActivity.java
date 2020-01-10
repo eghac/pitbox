@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bzgroup.pitboxauxiliovehicular.R;
+import com.bzgroup.pitboxauxiliovehicular.myaddress.ui.MyAddressActivyt;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.ui.MyVehiclesActivity;
 
 import butterknife.ButterKnife;
@@ -31,6 +32,11 @@ public class MainProfileActivity extends AppCompatActivity {
     @OnClick(R.id.activity_main_profile_my_vehicles)
     public void handleMyVehicles() {
         startActivity(new Intent(this, MyVehiclesActivity.class));
+    }
+
+    @OnClick(R.id.activity_main_profile_my_address)
+    public void handleMyAddress() {
+        startActivity(new Intent(this, MyAddressActivyt.class));
     }
 
 }

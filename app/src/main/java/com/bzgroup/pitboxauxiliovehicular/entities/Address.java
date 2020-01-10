@@ -1,6 +1,8 @@
 package com.bzgroup.pitboxauxiliovehicular.entities;
 
-public class Address {
+import java.io.Serializable;
+
+public class Address implements Serializable {
     private String id;
     private String latitude;
     private String longitude;

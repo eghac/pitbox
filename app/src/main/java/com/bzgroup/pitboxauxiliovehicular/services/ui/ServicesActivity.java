@@ -7,26 +7,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -48,14 +44,13 @@ import com.bzgroup.pitboxauxiliovehicular.ServiceRequestScreen.ServiceRequestAct
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.AddVehicleActivity;
 import com.bzgroup.pitboxauxiliovehicular.dialogs.DeniedLocationPersmissionDialogFragment;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.services.IServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.ServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.adapter.AdapterMyAddress;
 import com.bzgroup.pitboxauxiliovehicular.services.adapter.AdapterServices;
 import com.bzgroup.pitboxauxiliovehicular.services.modals.MyVehiclesEmptyBottomSheetDialog;
 import com.bzgroup.pitboxauxiliovehicular.services.modals.ScheduleBottomSheetDialog;
-import com.bzgroup.pitboxauxiliovehicular.utils.AppPreferences;
 import com.bzgroup.pitboxauxiliovehicular.utils.IOnItemClickListener;
 import com.bzgroup.pitboxauxiliovehicular.utils.Permission;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -165,8 +160,9 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.map_sec);
         mapFragment.getMapAsync(this);
 
         categorieId = getIntent().getStringExtra("CATEGORIE_ID");
@@ -357,7 +353,6 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnCameraIdleListener(this);
-//        mMap.setOnCameraMoveListener(this);
         mMap.setOnCameraMoveStartedListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
@@ -474,6 +469,7 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
                         .build();                   // Creates a CameraPosition from the builder
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 currentLocation = cameraPosition.target;
+                currentLocationCameraIdle = currentLocation;
 //            mPresenter.handleServiceStations();
             }
             locationB = false;
@@ -694,8 +690,6 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     public void onCameraIdle() {
         Log.d(TAG, "onCameraIdle: ");
         activity_services_container.setVisibility(isServices ? View.VISIBLE : View.GONE);
-
-
 //        sleepScreen(1000);
         LatLng latLng = mMap.getCameraPosition().target;
         currentLocationCameraIdle = latLng;

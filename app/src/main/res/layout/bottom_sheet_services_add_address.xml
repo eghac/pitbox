@@ -77,7 +77,45 @@
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_sheet_services_add_address_map"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            map:layout_constraintBottom_toTopOf="@+id/constraintLayout7"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.5"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent">
 
+            <fragment
+                android:id="@+id/map_sec2"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                map:layout_constraintBottom_toBottomOf="parent"
+                map:layout_constraintEnd_toEndOf="parent"
+                map:layout_constraintStart_toStartOf="parent"
+                map:layout_constraintTop_toTopOf="parent"/>
+
+            <!--                <com.google.android.gms.maps.MapView-->
+            <!--                    android:id="@+id/map"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="match_parent" />-->
+            <!--            </fragment>-->
+
+            <ImageView
+                android:id="@+id/imageViewX2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:elevation="4dp"
+                android:src="@drawable/ic_map_pin"
+                map:layout_constraintBottom_toBottomOf="@id/map_sec2"
+                map:layout_constraintEnd_toEndOf="@+id/map_sec2"
+                map:layout_constraintStart_toStartOf="@+id/map_sec2"
+                map:layout_constraintTop_toTopOf="@+id/map_sec2"
+                map:layout_constraintVertical_bias="0.450" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout7"

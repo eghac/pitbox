@@ -65,7 +65,8 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     // HITGIF TextFieldBoxes
     implementation 'com.github.HITGIF:TextFieldBoxes:1.4.4'
-
+    //ViewPagerIndicator
+    implementation 'com.github.vivchar:ViewPagerIndicator:1.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -4,12 +4,11 @@ import android.content.Context;
 
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
 import com.bzgroup.pitboxauxiliovehicular.services.event.ServicesEvent;
 import com.bzgroup.pitboxauxiliovehicular.services.ui.IServicesView;
-import com.google.android.gms.dynamic.IFragmentWrapper;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -53,6 +52,20 @@ public class ServicesPresenter implements IServicesPresenter {
             mView.showProgress();
         }
         mRepository.handleServices(categorieId);
+    }
+
+    @Override
+    public void handleAddAddress(double latitude, double longitude, String description) {
+        if (mView != null)
+            mView.showProgress();
+        mRepository.handleAddAddress(latitude, longitude, description);
+    }
+
+    @Override
+    public void handleMyAddress() {
+        if (mView != null)
+            mView.showProgress();
+        mRepository.handleMyAddress();
     }
 
     @Subscribe
@@ -124,20 +137,6 @@ public class ServicesPresenter implements IServicesPresenter {
             mView.showContainerEmptyMyAddress();
             mView.providerMyAddressIsEmpty(errorMessage);
         }
-    }
-
-    @Override
-    public void handleMyAddress() {
-        if (mView != null)
-            mView.showProgress();
-        mRepository.handleMyAddress();
-    }
-
-    @Override
-    public void handleAddAddress(double latitude, double longitude, String description) {
-        if (mView != null)
-            mView.showProgress();
-        mRepository.handleAddAddress(latitude, longitude, description);
     }
 
     private void servicesSucess(List<Service> services) {

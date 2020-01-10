@@ -1,13 +1,12 @@
 package com.bzgroup.pitboxauxiliovehicular.vehicles;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
 import com.bzgroup.pitboxauxiliovehicular.utils.AppPreferences;
@@ -15,9 +14,11 @@ import com.bzgroup.pitboxauxiliovehicular.utils.Constants;
 import com.bzgroup.pitboxauxiliovehicular.utils.SingletonVolley;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.events.MyVehiclesEvent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VehiclesRepository implements IVehiclesRepository {
@@ -83,8 +84,30 @@ public class VehiclesRepository implements IVehiclesRepository {
         SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void loadMyVehiclesResponse(JSONObject response) {
-
+    private void loadMyVehiclesResponse(JSONObject response) throws JSONException {
+        JSONArray array = response.getJSONArray("data");
+        List<Vehicle> vehicles = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject object = array.getJSONObject(i);
+            vehicles.add(new Vehicle(
+                    object.getString("id"),
+                    object.getString("alias"),
+                    object.getString("placa"),
+                    object.getString("marca"),
+                    object.getString("modelo"),
+                    object.getString("submodelo"),
+                    object.getString("tipo_caja"),
+                    object.getString("transmision"),
+                    object.getString("combustible"),
+                    object.getString("tipo_vehiculo_id"),
+                    object.getString("created_at"),
+                    object.getString("cliente_id")
+            ));
+        }
+        if (!vehicles.isEmpty())
+            postEvent(MyVehiclesEvent.showMyVehiclesSuccess, vehicles, null);
+        else
+            postEvent(MyVehiclesEvent.myVehiclesIsEmpty, null, null);
     }
 
     private void postEvent(int eventType, List<Vehicle> myVehicles) {

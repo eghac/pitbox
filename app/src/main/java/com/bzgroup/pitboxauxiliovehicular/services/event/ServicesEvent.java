@@ -2,7 +2,7 @@ package com.bzgroup.pitboxauxiliovehicular.services.event;
 
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
 

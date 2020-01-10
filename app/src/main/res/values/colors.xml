@@ -13,4 +13,8 @@
 
     <color name="colorTextPrimary">#1d1d1d</color>
     <color name="colorWarningMessage">#ffff4444</color>
+<!--    <color name="colorNegroMedioTransparente">#A3FFFEFE</color>-->
+    <color name="colorNegroMedioTransparente">#4A000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="dot_inactive">#3f3f3f</color>
 </resources>

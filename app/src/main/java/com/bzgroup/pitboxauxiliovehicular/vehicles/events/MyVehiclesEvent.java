@@ -1,6 +1,6 @@
 package com.bzgroup.pitboxauxiliovehicular.vehicles.events;
 
-import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
 

@@ -22,4 +22,5 @@
     <string name="title_activity_main_profile"></string>
     <string name="title_activity_my_vehicles">Mis vehículos</string>
     <string name="title_activity_add_vehicle">Agregar vehículo</string>
+    <string name="title_activity_my_address_activyt">Mis ubicaciones</string>
 </resources>

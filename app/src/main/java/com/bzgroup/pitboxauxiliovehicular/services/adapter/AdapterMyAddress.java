@@ -59,17 +59,37 @@ public class AdapterMyAddress extends RecyclerView.Adapter<AdapterMyAddress.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Address item = mItems.get(position);
-        if (!isMyAddressScreen) {
-            holder.bs_my_address_item_delete_btn.setVisibility(View.GONE);
-            holder.bs_my_address_item_edit_btn.setVisibility(View.GONE);
+        if (isMyAddressScreen) {
+            holder.bs_my_address_item_delete_btn.setVisibility(View.VISIBLE);
+            holder.bs_my_address_item_delete_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.putExtra("MY_ADDRESS_TYPE", 2);
+                    intent.putExtra("MY_ADDRESS_ITEM", item);
+                    mListener.onItemClick(intent);
+                }
+            });
+
+            holder.bs_my_address_item_edit_btn.setVisibility(View.VISIBLE);
+            holder.bs_my_address_item_edit_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.putExtra("MY_ADDRESS_TYPE", 1);
+                    intent.putExtra("MY_ADDRESS_ITEM", item);
+                    mListener.onItemClick(intent);
+                }
+            });
+        } else {
+            holder.bs_my_address_item_container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onItemClick(item);
+                }
+            });
         }
         holder.bs_my_address_item_description.setText(item.getDescription());
-        holder.bs_my_address_item_container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onItemClick(item);
-            }
-        });
     }
 
     @Override

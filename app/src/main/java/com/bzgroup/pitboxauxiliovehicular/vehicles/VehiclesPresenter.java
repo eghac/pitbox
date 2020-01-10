@@ -2,12 +2,15 @@ package com.bzgroup.pitboxauxiliovehicular.vehicles;
 
 import android.content.Context;
 
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.events.MyVehiclesEvent;
 import com.bzgroup.pitboxauxiliovehicular.vehicles.ui.VehiclesView;
 
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 public class VehiclesPresenter implements IVehiclesPresenter {
 
@@ -46,7 +49,7 @@ public class VehiclesPresenter implements IVehiclesPresenter {
     public void onEventMainThread(MyVehiclesEvent event) {
         switch (event.getEventType()) {
             case MyVehiclesEvent.showMyVehiclesSuccess:
-                showMyVehiclesSuccess();
+                showMyVehiclesSuccess(event.getVehicles());
                 break;
             case MyVehiclesEvent.myVehiclesIsEmpty:
                 showMyVehiclesSuccessIsEmpty(event.getErrorMesage());
@@ -54,10 +57,11 @@ public class VehiclesPresenter implements IVehiclesPresenter {
         }
     }
 
-    private void showMyVehiclesSuccess() {
+    private void showMyVehiclesSuccess(List<Vehicle> vehicles) {
         if (mView != null) {
             mView.hideIsEmptyText();
             mView.hideProgress();
+            mView.providerMyVehicles(vehicles);
         }
     }
 
