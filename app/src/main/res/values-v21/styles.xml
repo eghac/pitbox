@@ -8,6 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppThemeTextColorBlack" parent="AppTheme">
+        <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
 </resources>

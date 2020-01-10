@@ -21,6 +21,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".addvehicle.ui.AddVehicleActivity"
+            android:label="@string/title_activity_add_vehicle"
+            android:parentActivityName=".vehicles.ui.MyVehiclesActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bzgroup.pitboxauxiliovehicular.vehicles.ui.MyVehiclesActivity" />
+        </activity>
+        <activity
             android:name=".vehicles.ui.MyVehiclesActivity"
             android:label="@string/title_activity_my_vehicles"
             android:parentActivityName=".mainprofile.ui.MainProfileActivity"

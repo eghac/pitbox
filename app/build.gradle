@@ -63,6 +63,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     // circle image
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+    // HITGIF TextFieldBoxes
+    implementation 'com.github.HITGIF:TextFieldBoxes:1.4.4'
 
 }
 

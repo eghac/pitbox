@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,11 +26,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-//import com.bumptech.glide.Glide;
-
 public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.ViewHolder> {
 
-    //    private List<MainMenuItem> mItems;
     private List<Vehicle> mItems;
     private Context mContext;
 
@@ -69,6 +68,12 @@ public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.Vi
 //                v.getContext().startActivity(intent);
 //            }
 //        });
+        holder.activity_my_vehicles_item_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "hola", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -77,12 +82,14 @@ public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.fragment_main_menu_item_img)
-        ImageView fragment_main_menu_item_img;
-        @BindView(R.id.fragment_main_menu_item_txt)
-        TextView fragment_main_menu_item_txt;
-        @BindView(R.id.fragment_main_menu_container)
-        ConstraintLayout fragment_main_menu_container;
+        //        @BindView(R.id.fragment_main_menu_item_img)
+//        ImageView fragment_main_menu_item_img;
+//        @BindView(R.id.fragment_main_menu_item_txt)
+//        TextView fragment_main_menu_item_txt;
+//        @BindView(R.id.fragment_main_menu_container)
+//        ConstraintLayout fragment_main_menu_container;
+        @BindView(R.id.activity_my_vehicles_item_container)
+        CardView activity_my_vehicles_item_container;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

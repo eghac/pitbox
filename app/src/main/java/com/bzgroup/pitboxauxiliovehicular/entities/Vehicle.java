@@ -14,6 +14,9 @@ public class Vehicle {
     private String created_at;
     private String tipo_vehiculo_id;
 
+    public Vehicle() {
+    }
+
     public Vehicle(String id, String alias, String placa, String marca, String modelo, String submodelo, String anho, String tipo_caja, String transmision, String combustible, String created_at, String tipo_vehiculo_id) {
         this.id = id;
         this.alias = alias;

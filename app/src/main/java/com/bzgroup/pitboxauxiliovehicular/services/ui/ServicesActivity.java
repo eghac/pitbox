@@ -45,6 +45,7 @@ import android.widget.Toast;
 
 import com.bzgroup.pitboxauxiliovehicular.R;
 import com.bzgroup.pitboxauxiliovehicular.ServiceRequestScreen.ServiceRequestActivity;
+import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.AddVehicleActivity;
 import com.bzgroup.pitboxauxiliovehicular.dialogs.DeniedLocationPersmissionDialogFragment;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.Vehicle;
@@ -854,7 +855,7 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void addVehicleClick() {
-        Toast.makeText(this, "addVehicleClick", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, AddVehicleActivity.class));
     }
 
     @Override
