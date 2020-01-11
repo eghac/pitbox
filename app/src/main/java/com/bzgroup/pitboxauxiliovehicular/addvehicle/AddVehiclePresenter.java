@@ -4,9 +4,11 @@ import android.graphics.Bitmap;
 
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.events.AddVehicleEvent;
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.IAddVehicleView;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoCaja;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoVehiculo;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -41,6 +43,30 @@ public class AddVehiclePresenter implements IAddVehiclePresenter {
     }
 
     @Override
+    public void handleBoxType() {
+        mRepository.handleBoxType();
+    }
+
+    @Override
+    public void handleTransmissionType() {
+        mRepository.handleTransmissionType();
+    }
+
+    @Override
+    public void handleFuelType() {
+        mRepository.handleFuelType();
+    }
+
+    @Override
+    public void handleAddVehicleConfirm(String alias, String licensePlate, int vehicleType, String brand, String model, String submodel, String year, String boxType, String transmissionType, String fuelType) {
+        if (mView != null) {
+            mView.showProgress();
+            mView.disableInputs();
+        }
+        mRepository.handleAddVehicleConfirm(alias, licensePlate, vehicleType, brand, model, submodel, year, boxType, transmissionType, fuelType);
+    }
+
+    @Override
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(AddVehicleEvent event) {
         switch (event.getEventType()) {
@@ -49,6 +75,42 @@ public class AddVehiclePresenter implements IAddVehiclePresenter {
                 break;
             case AddVehicleEvent.vehiclesTypeIsEmpty:
                 break;
+            case AddVehicleEvent.ADD_VEHICLE_BOX_TYPE_SUCCESS:
+                boxTypeSuccess(event.getTipoCaja());
+                break;
+            case AddVehicleEvent.ADD_VEHICLE_TRANSMISSION_TYPE_SUCCESS:
+                transmisstionTypeSucess(event.getTransmissionType());
+                break;
+            case AddVehicleEvent.ADD_VEHICLE_FUEL_TYPE_SUCCESS:
+                fuelTypeSuccess(event.getFuelType());
+                break;
+            case AddVehicleEvent.ADD_VEHICLE_SUCESS:
+                addVehicleSuccess(event.getErrorMessage());
+                break;
+            case AddVehicleEvent.ADD_VEHICLE_ERROR:
+                addVehicleError(event.getErrorMessage());
+                break;
+        }
+    }
+
+    private void fuelTypeSuccess(List<String> fuelType) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.providerFuelType(fuelType);
+        }
+    }
+
+    private void transmisstionTypeSucess(List<String> transmissionType) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.providerTrasnmissionType(transmissionType);
+        }
+    }
+
+    private void boxTypeSuccess(TipoCaja tipoCaja) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.providerBoxType(tipoCaja);
         }
     }
 
@@ -82,9 +144,9 @@ public class AddVehiclePresenter implements IAddVehiclePresenter {
         }
     }
 
-    private void addVehicleSuccess() {
+    private void addVehicleSuccess(String message) {
         if (mView != null) {
-            mView.showMessage("Vehículo agregado exitósamente");
+            mView.showMessage(message);
             mView.navigateToMainScreen();
         }
     }

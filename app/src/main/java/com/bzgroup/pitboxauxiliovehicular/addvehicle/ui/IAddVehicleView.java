@@ -1,5 +1,6 @@
 package com.bzgroup.pitboxauxiliovehicular.addvehicle.ui;
 
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoCaja;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoVehiculo;
 
 import java.util.List;
@@ -16,6 +17,12 @@ public interface IAddVehicleView {
     void showMessage(String message);
 
     void navigateToMainScreen();
+
+    void providerBoxType(TipoCaja boxType);
+
+    void providerTrasnmissionType(List<String> transmissionType);
+
+    void providerFuelType(List<String> fuelType);
 //    void handleVehicleDescription(String description);
 //    void onHandleDataModelsSpinnerIsEmpty();
 //    void navigateToMainScreen();

@@ -96,12 +96,12 @@ public class VehiclesRepository implements IVehiclesRepository {
                     object.getString("marca"),
                     object.getString("modelo"),
                     object.getString("submodelo"),
+                    object.getString("anho"),
                     object.getString("tipo_caja"),
                     object.getString("transmision"),
                     object.getString("combustible"),
-                    object.getString("tipo_vehiculo_id"),
                     object.getString("created_at"),
-                    object.getString("cliente_id")
+                    object.getString("tipo_vehiculo_id")
             ));
         }
         if (!vehicles.isEmpty())

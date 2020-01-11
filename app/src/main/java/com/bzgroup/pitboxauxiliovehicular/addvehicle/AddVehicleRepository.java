@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -12,12 +14,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.events.AddVehicleEvent;
+import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoCaja;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.TipoVehiculo;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
+import com.bzgroup.pitboxauxiliovehicular.services.event.ServicesEvent;
 import com.bzgroup.pitboxauxiliovehicular.utils.AppPreferences;
 import com.bzgroup.pitboxauxiliovehicular.utils.Constants;
 import com.bzgroup.pitboxauxiliovehicular.utils.SingletonVolley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +36,10 @@ public class AddVehicleRepository implements IAddVehicleRepository {
 
     private static final String TAG = AddVehicleRepository.class.getSimpleName();
     private static final String VEHICLES_TYPE_URL = Constants.GLOBAL_URL + "tipo-vehiculos/";
+    private static final String VEHICLES_BOX_TYPE_URL = Constants.GLOBAL_URL + "tipos-caja";
+    private static final String VEHICLES_TRANSMISSION_TYPE_URL = Constants.GLOBAL_URL + "tipos-transmision";
+    private static final String VEHICLES_FUEL_TYPE_URL = Constants.GLOBAL_URL + "tipos-combustible";
+    private static final String VEHICLES_ADD_CONFIRM_URL = Constants.GLOBAL_URL + "vehiculos";
 
     public static final String ADD_VEHICLE_SERVER_ID = "id";
     public static final String ADD_VEHICLE_BRAND_ID = "marca";
@@ -101,6 +110,193 @@ public class AddVehicleRepository implements IAddVehicleRepository {
     public void handleVehiclesType() {
         requestVehiclesType();
     }
+
+    @Override
+    public void handleBoxType() {
+        requestBoxType();
+    }
+
+    @Override
+    public void handleFuelType() {
+        requestFuelType();
+    }
+
+    @Override
+    public void handleAddVehicleConfirm(String alias, String licensePlate, int vehicleType, String brand, String model, String submodel, String year, String boxType, String transmissionType, String fuelType) {
+        requestAddVehicleConfirm(alias, licensePlate, vehicleType, brand, model, submodel, year, boxType, transmissionType, fuelType);
+    }
+
+    private void requestAddVehicleConfirm(String alias, String licensePlate, int vehicleType, String brand, String model, String submodel, String year, String boxType, String transmissionType, String fuelType) {
+        String userId = getUserUuid();
+        if (userId == null)
+            return;
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("alias", alias);
+        data.put("placa", licensePlate);
+        data.put("marca", brand);
+        data.put("modelo", model);
+        data.put("submodelo", submodel);
+        data.put("anho", year);
+        data.put("tipo_caja", boxType);
+        data.put("transmision", transmissionType);
+        data.put("combustible", fuelType);
+        data.put("tipo_vehiculo_id", vehicleType);
+        data.put("cliente_id", userId);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, VEHICLES_ADD_CONFIRM_URL, new JSONObject(data),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (response.getInt("status") == 201)
+                                loadRequestAddVehicleConfirm(response);
+                            else if (response.getInt("status") == 422)
+                                postEvent(AddVehicleEvent.ADD_VEHICLE_ERROR, null, null, null, null, response.getString("message"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        postEvent(AddVehicleEvent.ADD_VEHICLE_ERROR, null, null, null, null, error.getMessage());
+                    }
+                }
+        );
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+
+    }
+
+    private void loadRequestAddVehicleConfirm(JSONObject response) throws JSONException {
+        postEvent(AddVehicleEvent.ADD_VEHICLE_SUCESS, null, null, null, null, response.getString("message"));
+    }
+
+    private String getUserUuid() {
+        String userUuid = AppPreferences.getInstance(mContext).readString(AppPreferences.Keys.USER_UUID);
+        if (userUuid == null || userUuid.isEmpty()) {
+            postEvent(AddVehicleEvent.ADD_VEHICLE_ERROR, null, "Hubo un error al agregar el vehículo.");
+            return null;
+        }
+        return userUuid;
+    }
+
+    private void requestFuelType() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, VEHICLES_FUEL_TYPE_URL,
+                null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    switch (response.getInt("status")) {
+                        case 200:
+                            loadFuelTypeResponse(response);
+                            break;
+                        case 402:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void loadFuelTypeResponse(JSONObject response) throws JSONException {
+        List<String> data = new ArrayList<>();
+        data.add(response.getJSONObject("data").getString("gasolina"));
+        data.add(response.getJSONObject("data").getString("diesel"));
+        data.add(response.getJSONObject("data").getString("gas"));
+        data.add(response.getJSONObject("data").getString("electricidad"));
+        data.add(response.getJSONObject("data").getString("mixto"));
+        postEvent(AddVehicleEvent.ADD_VEHICLE_FUEL_TYPE_SUCCESS, null, null, null, data, null);
+    }
+
+    @Override
+    public void handleTransmissionType() {
+        requestTransmissionType();
+    }
+
+    private void requestTransmissionType() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, VEHICLES_TRANSMISSION_TYPE_URL,
+                null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    switch (response.getInt("status")) {
+                        case 200:
+                            loadTransmissionTypeResponse(response);
+                            break;
+                        case 402:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void loadTransmissionTypeResponse(JSONObject response) throws JSONException {
+        List<String> data = new ArrayList<>();
+        data.add(response.getJSONObject("data").getString("4x2"));
+        data.add(response.getJSONObject("data").getString("4x4"));
+        postEvent(AddVehicleEvent.ADD_VEHICLE_TRANSMISSION_TYPE_SUCCESS, null, null, data, null, null);
+    }
+
+    private void requestBoxType() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, VEHICLES_BOX_TYPE_URL,
+                null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    switch (response.getInt("status")) {
+                        case 200:
+                            loadBoxTypeResponse(response);
+                            break;
+                        case 402:
+                            break;
+                        case 422:
+//                            No se pudo registrar el vehiculos: El campo placa ya existe en la base de datos
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void loadBoxTypeResponse(JSONObject response) throws JSONException {
+        TipoCaja tipoCaja = new TipoCaja(
+                response.getJSONObject("data").getString("automatica"),
+                response.getJSONObject("data").getString("mecanica"));
+        postEvent(AddVehicleEvent.ADD_VEHICLE_BOX_TYPE_SUCCESS, tipoCaja);
+    }
+
 
     //    private void serviceEditVehicleData(int idVehiculoServer, String plain, String vin, String description, Bitmap mBitmap) {
 //        HashMap<String, String> data = new HashMap<>();
@@ -505,6 +701,40 @@ public class AddVehicleRepository implements IAddVehicleRepository {
 //    private  void postEventBrands(int type, List<Marca> brands) {
 //        postEvent(type, brands, null, null, null, null, null);
 //    }
+
+    private void postEvent(int type, TipoCaja tipoCaja) {
+        postEvent(type, null, tipoCaja, null, null, null);
+    }
+
+//    private void postEvent(int type, List<TipoVehiculo> vehiclesType, TipoCaja tipoCaja, String errorMessage) {
+//        AddVehicleEvent addVehicleEvent = new AddVehicleEvent();
+//        addVehicleEvent.setEventType(type);
+//        if (vehiclesType != null)
+//            addVehicleEvent.setVehiclesType(vehiclesType);
+//        if (tipoCaja != null)
+//            addVehicleEvent.setBoxType(tipoCaja);
+//        if (errorMessage != null)
+//            addVehicleEvent.setErrorMessage(errorMessage);
+//        EventBus eventBus = GreenRobotEventBus.getInstance();
+//        eventBus.post(addVehicleEvent);
+//    }
+
+    private void postEvent(int type, List<TipoVehiculo> vehiclesType, TipoCaja tipoCaja, List<String> transmissionTypeList, List<String> fuelTypeList, String errorMessage) {
+        AddVehicleEvent addVehicleEvent = new AddVehicleEvent();
+        addVehicleEvent.setEventType(type);
+        if (vehiclesType != null)
+            addVehicleEvent.setVehiclesType(vehiclesType);
+        if (tipoCaja != null)
+            addVehicleEvent.setBoxType(tipoCaja);
+        if (transmissionTypeList != null)
+            addVehicleEvent.setTransmissionType(transmissionTypeList);
+        if (fuelTypeList != null)
+            addVehicleEvent.setFuelType(fuelTypeList);
+        if (errorMessage != null)
+            addVehicleEvent.setErrorMessage(errorMessage);
+        EventBus eventBus = GreenRobotEventBus.getInstance();
+        eventBus.post(addVehicleEvent);
+    }
 
     private static void postEvent(int type, List<TipoVehiculo> vehiclesType, String errorMessage) {
         AddVehicleEvent addVehicleEvent = new AddVehicleEvent();
