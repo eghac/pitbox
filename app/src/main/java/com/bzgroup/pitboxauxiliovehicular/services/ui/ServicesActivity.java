@@ -44,11 +44,13 @@ import com.bzgroup.pitboxauxiliovehicular.ServiceRequestScreen.ServiceRequestAct
 import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.AddVehicleActivity;
 import com.bzgroup.pitboxauxiliovehicular.dialogs.DeniedLocationPersmissionDialogFragment;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.services.IServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.ServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.adapter.AdapterMyAddress;
 import com.bzgroup.pitboxauxiliovehicular.services.adapter.AdapterServices;
+import com.bzgroup.pitboxauxiliovehicular.services.modals.FindingSupplierBottomSheetDialog;
 import com.bzgroup.pitboxauxiliovehicular.services.modals.MyVehiclesEmptyBottomSheetDialog;
 import com.bzgroup.pitboxauxiliovehicular.services.modals.ScheduleBottomSheetDialog;
 import com.bzgroup.pitboxauxiliovehicular.utils.IOnItemClickListener;
@@ -73,7 +75,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -140,6 +144,11 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     @BindView(R.id.bs__add_address_description)
     TextInputEditText bs__add_address_description;
 
+    // Bottom Sheet Finding Supplier
+    @BindView(R.id.bottom_sheet_finding_supplier)
+    ConstraintLayout bottom_sheet_finding_supplier;
+    private BottomSheetBehavior bottomSheetBehaviorFindingSupplier;
+
     private String categorieId;
     private boolean isSchedule;
     private IServicesPresenter mPresenter;
@@ -156,6 +165,7 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         ButterKnife.bind(this);
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_set_location);
         bottomSheetBehaviorAddAddress = BottomSheetBehavior.from(bottom_sheet_add_address);
+        bottomSheetBehaviorFindingSupplier = BottomSheetBehavior.from(bottom_sheet_finding_supplier);
         setupSheetBehavior();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getWindow().getDecorView().setSystemUiVisibility(
@@ -220,6 +230,34 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
                 switch (i) {
                     case BottomSheetBehavior.STATE_DRAGGING:
                         bottomSheetBehaviorAddAddress.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+//                        btnBottomSheet.setText("Close Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+//                        btnBottomSheet.setText("Expand Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+                Log.d(TAG, "onSlide: ");
+            }
+        });
+        bottomSheetBehaviorFindingSupplier.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+                Log.d(TAG, "onStateChanged: " + i);
+                switch (i) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
@@ -617,24 +655,53 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    private void enabledInputs() {
+    @Override
+    public void enabledInputs() {
         activity_services_request_btn.setEnabled(true);
     }
 
-    private void disabledInputs() {
+    @Override
+    public void disabledInputs() {
         activity_services_request_btn.setEnabled(false);
     }
 
     @OnClick(R.id.activity_services_request_btn)
     public void handleServiceRequest() {
-        showProgress();
-        disabledInputs();
-        if (service != null && currentLocation != null) {
-            Log.d(TAG, "handleServiceRequest currentLocation: " + currentLocation.toString());
-            Log.d(TAG, "handleServiceRequest service: " + service.toString());
-            startActivity(new Intent(getApplicationContext(), ServiceRequestActivity.class));
-            finish();
+//        showProgress();
+//        disabledInputs();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy_HH:mm", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+        String[] d = currentDateandTime.split("_");
+        String date = d[0];
+        String time = d[1];
+        if (scheduleDate != null && !scheduleDate.isEmpty() && scheduleTime != null && !scheduleTime.isEmpty()) {
+            if (service != null && currentLocationCameraIdle != null && mVehicle != null) {
+                Log.d(TAG, "handleServiceRequest currentLocation: " + currentLocationCameraIdle.toString());
+                Log.d(TAG, "handleServiceRequest service: " + service.toString());
+                Log.d(TAG, "handleServiceRequest mVehicle: " + mVehicle.toString());
+                Log.d(TAG, "handleServiceRequest Date: " + scheduleDate);
+                Log.d(TAG, "handleServiceRequest Time: " + scheduleTime);
+                mPresenter.handleOrder(mVehicle.getId(),
+                        service.getId(),
+                        currentLocationCameraIdle.latitude,
+                        currentLocationCameraIdle.longitude,
+                        scheduleDate, scheduleTime, "");
+            }
+        } else {
+            if (service != null && currentLocationCameraIdle != null && mVehicle != null) {
+                Log.d(TAG, "handleServiceRequest currentLocation: " + currentLocationCameraIdle.toString());
+                Log.d(TAG, "handleServiceRequest service: " + service.toString());
+                Log.d(TAG, "handleServiceRequest mVehicle: " + mVehicle.toString());
+                Log.d(TAG, "handleServiceRequest Date: " + date);
+                Log.d(TAG, "handleServiceRequest Time: " + time);
+                mPresenter.handleOrder(mVehicle.getId(),
+                        service.getId(),
+                        currentLocationCameraIdle.latitude,
+                        currentLocationCameraIdle.longitude,
+                        date, time, "");
+            }
         }
+
     }
 
     private static String SCHEDULE_DIALOG = "SCHEDULE_DIALOG";
@@ -642,9 +709,12 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
 
     @OnClick(R.id.activity_service_schedule)
     public void handleScheduleService() {
+//        ScheduleBottomSheetDialog scheduleBottomSheetDialog = new ScheduleBottomSheetDialog();
         ScheduleBottomSheetDialog scheduleBottomSheetDialog = new ScheduleBottomSheetDialog();
         scheduleBottomSheetDialog.show(getSupportFragmentManager(), SCHEDULE_DIALOG);
     }
+
+    private Vehicle mVehicle;
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -654,6 +724,7 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         switch (spinnerId) {
             case R.id.activity_services_spinner_myvehicles:
                 if (object instanceof Vehicle) {
+                    mVehicle = (Vehicle) object;
                     mPresenter.handleServices(categorieId);
                 }
                 break;
@@ -671,9 +742,16 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         Log.d(TAG, "onNothingSelected: ");
     }
 
+    private String currentDate;
+    private String currentTime;
+    private String scheduleDate;
+    private String scheduleTime;
+
     @Override
-    public void onScheduleButtonClick(String time, String data) {
-        Toast.makeText(this, time + " / " + data, Toast.LENGTH_SHORT).show();
+    public void onScheduleButtonClick(String date, String time) {
+        scheduleDate = date;
+        scheduleTime = time;
+        Toast.makeText(this, date + " " + time, Toast.LENGTH_SHORT).show();
     }
 
     private Geocoder geocoder;
@@ -794,6 +872,32 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void addAddressError(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showContainerOrder() {
+//        Toast.makeText(this, "Mostrar cargando...", Toast.LENGTH_SHORT).show();
+//        FindingSupplierBottomSheetDialog b = new FindingSupplierBottomSheetDialog();
+//        b.show(getSupportFragmentManager(), "FINDING_SUPPLIER_BSD");
+        if (bottomSheetBehaviorFindingSupplier.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @Override
+    public void providerOrderSuccess(Pedido order, String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        mPresenter.handleGetSupplier(order.getId());
+    }
+
+    @Override
+    public void showOrderErrorMessage(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideServicesContainer() {
+        activity_services_container.setVisibility(View.GONE);
     }
 
     @Override

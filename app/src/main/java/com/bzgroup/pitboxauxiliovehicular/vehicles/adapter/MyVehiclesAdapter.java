@@ -52,7 +52,7 @@ public class MyVehiclesAdapter extends RecyclerView.Adapter<MyVehiclesAdapter.Vi
         holder.fragment_myvehicle_item_model.setText(vehicle.getModelo());
         holder.fragment_myvehicle_item_year.setText(vehicle.getAnho());
 //        holder.fragment_myvehicle_item_color.setText(vehicle.getco());
-        holder.fragment_myvehicle_item_type_vehicle.setText(vehicle.getTipo_vehiculo_id());
+        holder.fragment_myvehicle_item_type_vehicle.setText(vehicle.getTipo_vehiculo_nombre());
         holder.activity_my_vehicles_item_container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

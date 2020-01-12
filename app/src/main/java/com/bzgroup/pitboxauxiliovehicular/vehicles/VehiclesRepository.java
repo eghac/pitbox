@@ -89,6 +89,7 @@ public class VehiclesRepository implements IVehiclesRepository {
         List<Vehicle> vehicles = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             JSONObject object = array.getJSONObject(i);
+            JSONObject vehicleType = object.getJSONObject("tipo_vehiculo");
             vehicles.add(new Vehicle(
                     object.getString("id"),
                     object.getString("alias"),
@@ -101,7 +102,8 @@ public class VehiclesRepository implements IVehiclesRepository {
                     object.getString("transmision"),
                     object.getString("combustible"),
                     object.getString("created_at"),
-                    object.getString("tipo_vehiculo_id")
+                    object.getString("tipo_vehiculo_id"),
+                    vehicleType.getString("nombre")
             ));
         }
         if (!vehicles.isEmpty())

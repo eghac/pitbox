@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
@@ -34,6 +35,8 @@ public class ServicesRepository implements IServicesRepository {
     private static final String URL_MYADDRESS = GLOBAL_URL + "clientes/";
     private static final String URL_ADD_ADDRESS = GLOBAL_URL + "direcciones";
     private static final String URL_SERVICES = GLOBAL_URL + "categorias/";
+    private static final String URL_ORDER = GLOBAL_URL + "pedidos";
+    private static final String URL_ORDER_GET_SUPPLIER = GLOBAL_URL + "pedidos/";
     private Context mContext;
 
     public ServicesRepository(Context context) {
@@ -59,7 +62,7 @@ public class ServicesRepository implements IServicesRepository {
                             if (response.getInt("status") == 200)
                                 loadRequestMyVehicles(response);
                             else if (response.getInt("status") == 422)
-                                postEvent(ServicesEvent.SERVICES_MYVEHICLES_EMPTY, null, null, null, response.getString("message"));
+                                postEvent(ServicesEvent.SERVICES_MYVEHICLES_EMPTY, null, null, null, null, response.getString("message"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -70,7 +73,7 @@ public class ServicesRepository implements IServicesRepository {
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: ", error);
                         Toast.makeText(mContext, "requestMyVehicles error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        postEvent(ServicesEvent.SERVICES_MYVEHICLES_ERROR, null, null, null, error.getMessage());
+                        postEvent(ServicesEvent.SERVICES_MYVEHICLES_ERROR, null, null, null, null, error.getMessage());
                     }
                 }
         );
@@ -80,7 +83,8 @@ public class ServicesRepository implements IServicesRepository {
     private String getUserUuid() {
         String userUuid = AppPreferences.getInstance(mContext).readString(AppPreferences.Keys.USER_UUID);
         if (userUuid == null || userUuid.isEmpty()) {
-            postEvent(ServicesEvent.SERVICES_MYVEHICLES_ERROR, null, null, null, "Hubo un error al obtener mis vehículos.");
+            // arreglar el id
+            postEvent(ServicesEvent.SERVICES_MYVEHICLES_ERROR, null, null, null, null, "Hubo un error al obtener mis vehículos.");
             return null;
         }
         return userUuid;
@@ -91,6 +95,7 @@ public class ServicesRepository implements IServicesRepository {
         List<Vehicle> myVehicles = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             JSONObject myVehicle = array.getJSONObject(i);
+            JSONObject vehicleType = myVehicle.getJSONObject("tipo_vehiculo");
             myVehicles.add(new Vehicle(
                     myVehicle.getString("id"),
                     myVehicle.getString("alias"),
@@ -103,13 +108,14 @@ public class ServicesRepository implements IServicesRepository {
                     myVehicle.getString("transmision"),
                     myVehicle.getString("combustible"),
                     myVehicle.getString("created_at"),
-                    myVehicle.getString("tipo_vehiculo_id")
+                    myVehicle.getString("tipo_vehiculo_id"),
+                    vehicleType.getString("nombre")
             ));
         }
         if (!myVehicles.isEmpty())
-            postEvent(ServicesEvent.SERVICES_MYVEHICLES_SUCCESS, myVehicles, null, null, null);
+            postEvent(ServicesEvent.SERVICES_MYVEHICLES_SUCCESS, myVehicles, null, null, null, null);
         else
-            postEvent(ServicesEvent.SERVICES_MYVEHICLES_EMPTY, null, null, null, "No tenés vehículos registrados.");
+            postEvent(ServicesEvent.SERVICES_MYVEHICLES_EMPTY, null, null, null, null, "No tenés vehículos registrados.");
     }
 
     @Override
@@ -133,7 +139,7 @@ public class ServicesRepository implements IServicesRepository {
                                     loadRequestMyAddress(response);
                                     break;
                                 case 422:
-                                    postEvent(ServicesEvent.SERVICES_ADDRESS_EMPTY, null, null, null, response.getString("message"));
+                                    postEvent(ServicesEvent.SERVICES_ADDRESS_EMPTY, null, null, null, null, response.getString("message"));
                                     break;
                             }
                         } catch (JSONException e) {
@@ -146,7 +152,7 @@ public class ServicesRepository implements IServicesRepository {
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: ", error);
                         Toast.makeText(mContext, "handleMyAddress error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        postEvent(ServicesEvent.SERVICES_ADDRESS_ERROR, null, null, null, error.getMessage());
+                        postEvent(ServicesEvent.SERVICES_ADDRESS_ERROR, null, null, null, null, error.getMessage());
                     }
                 }
         );
@@ -168,12 +174,141 @@ public class ServicesRepository implements IServicesRepository {
         if (!addresses.isEmpty())
             postEventAddress(ServicesEvent.SERVICES_ADDRESS_SUCCESS, addresses);
         else
-            postEvent(ServicesEvent.SERVICES_ADDRESS_EMPTY, null, null, null, response.getString("message"));
+            postEvent(ServicesEvent.SERVICES_ADDRESS_EMPTY, null, null, null, null, response.getString("message"));
     }
 
     @Override
     public void handleAddAddress(double latitude, double longitude, String description) {
         requestAddAddress(latitude, longitude, description);
+    }
+
+    @Override
+    public void handleOrder(String vehicleId, String serviceId, double latitude, double longitude, String scheduleDate, String scheduleTime, String description) {
+        String userId = getUserUuid();
+        if (userId == null)
+            return;
+        requestOrder(userId, vehicleId, serviceId, latitude, longitude, scheduleDate, scheduleTime, description);
+    }
+
+    @Override
+    public void handleGetSupplier(String orderId) {
+        requestGetSupplier(orderId);
+    }
+
+    private void requestGetSupplier(String orderId) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, URL_ORDER_GET_SUPPLIER + orderId, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            switch (response.getInt("status")) {
+                                case 200:
+                                    loadRequestOrderGetSupplier(response);
+                                    break;
+                                case 422:
+                                    postEventError(ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_ERROR, response.getString("message"));
+                                    break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            postEventError(ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_ERROR, e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        postEventError(ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_ERROR, error.getMessage());
+                    }
+                }
+        );
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void postEventError(int type, String errorMessage) {
+        postEvent(type, null, null, null, null, errorMessage);
+    }
+
+    private void loadRequestOrderGetSupplier(JSONObject response) {
+        Log.d(TAG, "loadRequestOrderGetSupplier: " + response.toString());
+    }
+
+    private void requestOrder(String userId, String vehicleId, String serviceId, double latitude, double longitude, String scheduleDate, String scheduleTime, String description) {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("cliente_id", userId);
+        data.put("vehiculo_id", vehicleId);
+        data.put("servicio_id", serviceId);
+        data.put("latitud", latitude);
+        data.put("longitud", longitude);
+        data.put("fecha_programacion", scheduleDate);
+        data.put("hora_programacion", scheduleTime);
+        data.put("descripcion", description);
+        Log.d(TAG, "requestOrder: data " + data.toString());
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, URL_ORDER, new JSONObject(data),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            switch (response.getInt("status")) {
+                                case 200:
+                                    loadRequestOrder(response);
+                                    break;
+                                case 422:
+                                    postEventOrder(ServicesEvent.SERVICES_ORDER_ERROR, response.getString("message"));
+                                    break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            postEvent(ServicesEvent.SERVICES_ORDER_ERROR, null, null, null, null, e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        postEvent(ServicesEvent.SERVICES_ORDER_ERROR, null, null, null, null, error.getMessage());
+                    }
+                }
+        );
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void loadRequestOrder(JSONObject response) {
+        try {
+            JSONObject data = response.getJSONObject("data");
+            Pedido order = new Pedido(
+                    data.getString("id"),
+                    data.getString("cliente_id"),
+                    data.getString("vehiculo_id"),
+                    data.getString("servicio_id"),
+                    data.getString("latitud"),
+                    data.getString("longitud"),
+                    data.getString("fecha_programacion"),
+                    data.getString("hora_programacion"),
+                    data.getString("estado"),
+                    data.getString("descripcion"),
+                    data.getString("fecha_inicio"),
+                    data.getString("hora_inicio"),
+                    data.getString("precio_base"),
+                    data.getString("precio_total"),
+                    data.getString("created_at"),
+                    data.getString("updated_at")
+            );
+            postEventOrder(ServicesEvent.SERVICES_ORDER_SUCCESS, order, response.getString("message"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            postEventOrder(ServicesEvent.SERVICES_ORDER_ERROR, e.getMessage());
+        }
+    }
+
+    private void postEventOrder(int type, String message) {
+        postEvent(type, null, null, null, null, message);
+    }
+
+    private void postEventOrder(int type, Pedido order, String message) {
+        postEvent(type, null, null, null, order, message);
     }
 
     private void requestAddAddress(double latitude, double longitude, String description) {
@@ -196,12 +331,12 @@ public class ServicesRepository implements IServicesRepository {
                                     loadRequestAddAddress(response);
                                     break;
                                 case 422:
-                                    postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, response.getString("message"));
+                                    postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, null, response.getString("message"));
                                     break;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, e.getMessage());
+                            postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, null, e.getMessage());
                         }
                     }
                 },
@@ -210,7 +345,7 @@ public class ServicesRepository implements IServicesRepository {
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: ", error);
                         Toast.makeText(mContext, "requestAddAddress error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, error.getMessage());
+                        postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_ERROR, null, null, null, null, error.getMessage());
                     }
                 }
         );
@@ -219,7 +354,7 @@ public class ServicesRepository implements IServicesRepository {
 
     private void loadRequestAddAddress(JSONObject response) throws JSONException {
         Log.d(TAG, "loadRequestAddAddress: " + response.toString());
-        postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_SUCCESS, null, null, null, response.getString("message"));
+        postEvent(ServicesEvent.SERVICES_ADD_ADDRESS_SUCCESS, null, null, null, null, response.getString("message"));
     }
 
     private void requestServices(String categorieId) {
@@ -242,7 +377,7 @@ public class ServicesRepository implements IServicesRepository {
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: ", error);
                         Toast.makeText(mContext, "requestServices error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        postEvent(ServicesEvent.SERVICES_ERROR, null, null, null, error.getMessage());
+                        postEvent(ServicesEvent.SERVICES_ERROR, null, null, null, null, error.getMessage());
                     }
                 }
         );
@@ -255,38 +390,41 @@ public class ServicesRepository implements IServicesRepository {
         List<Service> services = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             JSONObject service = array.getJSONObject(i);
-            JSONObject image = service.getJSONObject("icono");
+//            JSONObject image = service.getJSONObject("icono");
             services.add(new Service(
                     service.getString("id"),
                     service.getString("nombre"),
                     service.getString("descripcion"),
                     service.getString("precio_base"),
                     service.getString("incremento_horario"),
-                    image.getString("url")
+//                    image.getString("url")
+                    ""
             ));
         }
         if (!services.isEmpty())
-            postEvent(ServicesEvent.SERVICES_SUCCESS, null, services, null, null);
+            postEvent(ServicesEvent.SERVICES_SUCCESS, null, services, null, null, null);
         else
-            postEvent(ServicesEvent.SERVICES_EMPTY, null, null, null, "No tenés vehículos registrados.");
+            postEvent(ServicesEvent.SERVICES_EMPTY, null, null, null, null, "No tenés vehículos registrados.");
     }
 
 
     private static void postEventMyVehicles(int type, List<Vehicle> myVehicles) {
-        postEvent(type, myVehicles, null, null, null);
+        postEvent(type, myVehicles, null, null, null, null);
     }
 
     private static void postEventServices(int type, List<Service> services) {
-        postEvent(type, null, services, null, null);
+        postEvent(type, null, services, null, null, null);
     }
 
     private void postEventAddress(int eventType, List<Address> addresses) {
-        postEvent(eventType, null, null, addresses, null);
+        postEvent(eventType, null, null, addresses, null, null);
     }
 
-    private static void postEvent(int type, List<Vehicle> myVehicles, List<Service> services, List<Address> addresses, String errorMessage) {
+    private static void postEvent(int type, List<Vehicle> myVehicles, List<Service> services, List<Address> addresses, Pedido order, String errorMessage) {
         ServicesEvent servicesEventEvent = new ServicesEvent();
         servicesEventEvent.setEventType(type);
+        if (order != null)
+            servicesEventEvent.setOrder(order);
         if (addresses != null)
             servicesEventEvent.setAddresses(addresses);
         if (myVehicles != null)

@@ -127,6 +127,7 @@ public class AddVehicleRepository implements IAddVehicleRepository {
     }
 
     private void requestAddVehicleConfirm(String alias, String licensePlate, int vehicleType, String brand, String model, String submodel, String year, String boxType, String transmissionType, String fuelType) {
+        Log.d(TAG, "requestAddVehicleConfirm: licensePlate: " + licensePlate);
         String userId = getUserUuid();
         if (userId == null)
             return;

@@ -2,6 +2,7 @@ package com.bzgroup.pitboxauxiliovehicular.services.ui;
 
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
@@ -11,6 +12,10 @@ public interface IServicesView {
     void showProgress();
 
     void hideProgress();
+
+    void disabledInputs();
+
+    void enabledInputs();
 
     void providerMyVehicles(List<Vehicle> myVehicles);
 
@@ -32,4 +37,11 @@ public interface IServicesView {
 
     void addAddressError(String errorMessage);
 
+    void showContainerOrder();
+
+    void providerOrderSuccess(Pedido order, String message);
+
+    void showOrderErrorMessage(String errorMessage);
+
+    void hideServicesContainer();
 }

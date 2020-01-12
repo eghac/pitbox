@@ -34,7 +34,10 @@ public class ScheduleBottomSheetDialog extends BottomSheetDialogFragment {
     DatePickerDialog pickerDialog;
     TimePickerDialog timePickerDialog;
 
-    String scheduleTime = null;
+    String scheduleDate = "";
+    String scheduleTime = "";
+    String date = null;
+    String time = null;
     @BindView(R.id.activity_services_bss_date)
     TextView activity_services_bss_date;
     @BindView(R.id.activity_services_bss_time)
@@ -50,26 +53,44 @@ public class ScheduleBottomSheetDialog extends BottomSheetDialogFragment {
         return v;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setup();
+    }
+
+    int day;
+    int month;
+    int year;
+
+    private void setup() {
+        calendar = Calendar.getInstance();
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        month = calendar.get(Calendar.MONTH);
+        year = calendar.get(Calendar.YEAR);
+        currentTime = calendar.getTime();
+        activity_services_bss_date.setText(convertDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ", " + day + " " + convertToMonth(month + 1));
+        activity_services_bss_time.setText(currentTime.getHours() + ":" + currentTime.getMinutes());
+        date = day + "-" + convertToMonthIntFormart(month + 1) + "-" + year;
+        time = currentTime.getHours() + ":" + convertFormatTime(currentTime.getMinutes());
+    }
+
     public interface ScheduleBottomSheetDialogListener {
-        void onScheduleButtonClick(String time, String data);
+        void onScheduleButtonClick(String date, String time);
     }
 
     Date currentTime;
 
     @OnClick(R.id.activity_services_bss_date)
     public void handleDate() {
-        calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        currentTime = calendar.getTime();
-
         pickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendar.set(year, month, dayOfMonth);
-                scheduleTime = convertDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ", " + dayOfMonth + " " + convertToMonth(month + 1);
-                activity_services_bss_date.setText(scheduleTime);
+                scheduleDate = convertDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ", " + dayOfMonth + " " + convertToMonth(month + 1);
+                date = dayOfMonth + "-" + convertToMonthIntFormart(month + 1) + "-" + year;
+                activity_services_bss_date.setText(scheduleDate);
+                activity_services_bss_btn.setText(scheduleDate + "  " + scheduleTime);
 //                Toast.makeText(getContext(), scheduleTime, Toast.LENGTH_SHORT).show();
             }
         }, year, month, day);
@@ -78,20 +99,28 @@ public class ScheduleBottomSheetDialog extends BottomSheetDialogFragment {
 
     @OnClick(R.id.activity_services_bss_time)
     public void handleTime() {
-
         if (currentTime != null) {
             timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     String hour = hourOfDay + ":" + convertFormatTime(minute);
                     activity_services_bss_time.setText(hour);
-                    scheduleTime = scheduleTime + " " + hour;
-                    activity_services_bss_btn.setText(scheduleTime);
+                    time = hour;
+                    scheduleTime = hour;
+                    activity_services_bss_btn.setText(scheduleDate + "  " + scheduleTime);
                 }
-            }, currentTime.getHours(), currentTime.getMinutes(), true);
+            }, currentTime.getHours(), currentTime.getMinutes(), false);
             timePickerDialog.show();
         } else {
             Toast.makeText(getContext(), "Seleccione primero la fecha para programar el servicio.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @OnClick(R.id.activity_services_bss_btn)
+    public void handleSetPickupScheduleService() {
+        if (mListener != null) {
+            mListener.onScheduleButtonClick(date, time);
+            dismiss();
         }
     }
 
@@ -160,6 +189,42 @@ public class ScheduleBottomSheetDialog extends BottomSheetDialogFragment {
         return s;
     }
 
+    public String convertToMonthIntFormart(int i) {
+        String s = String.valueOf(i);
+        switch (i) {
+            case 1:
+                s = "01";
+                break;
+            case 2:
+                s = "02";
+                break;
+            case 3:
+                s = "03";
+                break;
+            case 4:
+                s = "04";
+                break;
+            case 5:
+                s = "05";
+                break;
+            case 6:
+                s = "06";
+                break;
+            case 7:
+                s = "07";
+                break;
+            case 8:
+                s = "08";
+                break;
+            case 9:
+                s = "09";
+                break;
+            default:
+                break;
+        }
+        return s;
+    }
+
     public String convertToMonth(int i) {
         String s = "";
         switch (i) {
@@ -201,14 +266,6 @@ public class ScheduleBottomSheetDialog extends BottomSheetDialogFragment {
                 break;
         }
         return s;
-    }
-
-    @OnClick(R.id.activity_services_bss_btn)
-    public void handleSetPickupScheduleService() {
-        if (mListener != null) {
-            mListener.onScheduleButtonClick("", scheduleTime);
-            dismiss();
-        }
     }
 
     @Override

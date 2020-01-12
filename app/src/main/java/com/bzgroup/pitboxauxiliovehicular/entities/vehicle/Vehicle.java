@@ -13,11 +13,20 @@ public class Vehicle {
     private String combustible;
     private String created_at;
     private String tipo_vehiculo_id;
+    private String tipo_vehiculo_nombre;
 
     public Vehicle() {
     }
 
-    public Vehicle(String id, String alias, String placa, String marca, String modelo, String submodelo, String anho, String tipo_caja, String transmision, String combustible, String created_at, String tipo_vehiculo_id) {
+    public String getTipo_vehiculo_nombre() {
+        return tipo_vehiculo_nombre;
+    }
+
+    public void setTipo_vehiculo_nombre(String tipo_vehiculo_nombre) {
+        this.tipo_vehiculo_nombre = tipo_vehiculo_nombre;
+    }
+
+    public Vehicle(String id, String alias, String placa, String marca, String modelo, String submodelo, String anho, String tipo_caja, String transmision, String combustible, String created_at, String tipo_vehiculo_id, String tipo_vehiculo_nombre) {
         this.id = id;
         this.alias = alias;
         this.placa = placa;
@@ -30,6 +39,7 @@ public class Vehicle {
         this.combustible = combustible;
         this.created_at = created_at;
         this.tipo_vehiculo_id = tipo_vehiculo_id;
+        this.tipo_vehiculo_nombre = tipo_vehiculo_nombre;
     }
 
     @Override

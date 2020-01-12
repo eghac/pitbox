@@ -248,6 +248,8 @@
                     android:id="@+id/year_et_extended_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="4"
                     android:text="" />
 
             </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
@@ -399,7 +401,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="32dp"
                 android:text="Introducir un alias"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

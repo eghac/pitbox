@@ -39,21 +39,29 @@ public class AddVehiclePresenter implements IAddVehiclePresenter {
 
     @Override
     public void handleVehiclesType() {
+        if (mView != null)
+            mView.showProgress();
         mRepository.handleVehiclesType();
     }
 
     @Override
     public void handleBoxType() {
+        if (mView != null)
+            mView.showProgress();
         mRepository.handleBoxType();
     }
 
     @Override
     public void handleTransmissionType() {
+        if (mView != null)
+            mView.showProgress();
         mRepository.handleTransmissionType();
     }
 
     @Override
     public void handleFuelType() {
+        if (mView != null)
+            mView.showProgress();
         mRepository.handleFuelType();
     }
 

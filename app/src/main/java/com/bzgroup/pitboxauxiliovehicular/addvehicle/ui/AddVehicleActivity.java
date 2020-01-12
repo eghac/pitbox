@@ -14,11 +14,13 @@ import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +30,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bzgroup.pitboxauxiliovehicular.R;
+import com.redmadrobot.inputmask.MaskedTextChangedListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,7 @@ import studio.carbonylgroup.textfieldboxes.ExtendedEditText;
 
 public class AddVehicleActivity extends AppCompatActivity implements IAddVehicleView, AdapterView.OnItemSelectedListener, ConfirmAddVehicleDialogFragment.ConfirmAddVehicleDialogFragmentListener {
 
+    private static String TAG = AddVehicleActivity.class.getSimpleName();
     @BindView(R.id.alias_et_extended_edit_text)
     ExtendedEditText alias_et_extended_edit_text;
     @BindView(R.id.plain_extended_edit_text)
@@ -76,6 +80,7 @@ public class AddVehicleActivity extends AppCompatActivity implements IAddVehicle
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
+        setupMask();
         setupSpinnerListeners();
 //        setupInputs();
 
@@ -159,6 +164,32 @@ public class AddVehicleActivity extends AppCompatActivity implements IAddVehicle
             c.show(getSupportFragmentManager(), "CONFIRM_ADD_VEHICLE_DIALOG");
             c.setCancelable(false);
         }
+    }
+
+    private void setupMask() {
+        final MaskedTextChangedListener listener = MaskedTextChangedListener.Companion.installOn(
+                plain_extended_edit_text,
+                "[0009][AAA]",
+                new MaskedTextChangedListener.ValueListener() {
+                    @Override
+                    public void onTextChanged(boolean maskFilled, @NonNull final String extractedValue, @NonNull final String formattedValue) {
+                        Log.d(TAG, extractedValue);
+                        Log.d(TAG, String.valueOf(maskFilled));
+                    }
+                }
+        );
+//        final MaskedTextChangedListener listener = new MaskedTextChangedListener.Companion.installOn(
+//                "[0009] - [AAA]",
+//                plain_extended_edit_text,
+//                new MaskedTextChangedListener.ValueListener() {
+//                    @Override
+//                    public void onTextChanged(boolean maskFilled, @NonNull final String extractedValue) {
+//                    }
+//                }
+//        );
+        plain_extended_edit_text.addTextChangedListener(listener);
+        plain_extended_edit_text.setOnFocusChangeListener(listener);
+        plain_extended_edit_text.setHint(listener.placeholder());
     }
 
     private void showMessageAddVehicle(String message) {

@@ -2,6 +2,7 @@ package com.bzgroup.pitboxauxiliovehicular.services.event;
 
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
@@ -21,12 +22,26 @@ public class ServicesEvent {
     public static final int SERVICES_ADD_ADDRESS_EMPTY = 9;
     public static final int SERVICES_ADD_ADDRESS_ERROR = 10;
     public static final int SERVICES_ADD_ADDRESS_SUCCESS = 11;
+    public static final int SERVICES_ORDER_ERROR = 12;
+    public static final int SERVICES_ORDER_SUCCESS = 13;
+    public static final int SERVICES_ORDER_GET_SUPPLIER_ERROR = 14;
+    public static final int SERVICES_ORDER_GET_SUPPLIER_SUCCESS = 15;
+    public static final int SERVICES_ORDER_GET_SUPPLIER_EMPTY = 16;
 
     private int eventType;
     private String errorMessage;
     private List<Vehicle> myVehicles;
     private List<Service> services;
     private List<Address> addresses;
+    private Pedido order;
+
+    public Pedido getOrder() {
+        return order;
+    }
+
+    public void setOrder(Pedido order) {
+        this.order = order;
+    }
 
     public List<Address> getAddresses() {
         return addresses;

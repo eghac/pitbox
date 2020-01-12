@@ -67,6 +67,10 @@ dependencies {
     implementation 'com.github.HITGIF:TextFieldBoxes:1.4.4'
     //ViewPagerIndicator
     implementation 'com.github.vivchar:ViewPagerIndicator:1.1.0'
+
+    implementation 'com.redmadrobot:input-mask-android:5.0.0'
+
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.61'
 }
 
 apply plugin: 'com.google.gms.google-services'

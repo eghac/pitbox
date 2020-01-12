@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
@@ -62,10 +63,29 @@ public class ServicesPresenter implements IServicesPresenter {
     }
 
     @Override
+    public void handleOrder(String vehicleId, String serviceId, double latitude, double longitude, String scheduleDate, String scheduleTime, String description) {
+        if (mView != null) {
+            mView.showProgress();
+            mView.disabledInputs();
+//            mView.showContainerOrder();
+        }
+        mRepository.handleOrder(vehicleId, serviceId, latitude, longitude, scheduleDate, scheduleTime, description);
+    }
+
+    @Override
     public void handleMyAddress() {
         if (mView != null)
             mView.showProgress();
         mRepository.handleMyAddress();
+    }
+
+    @Override
+    public void handleGetSupplier(String orderId) {
+        if (mView != null) {
+            mView.hideServicesContainer();
+            mView.showContainerOrder();
+        }
+        mRepository.handleGetSupplier(orderId);
     }
 
     @Subscribe
@@ -99,6 +119,28 @@ public class ServicesPresenter implements IServicesPresenter {
             case ServicesEvent.SERVICES_ADD_ADDRESS_ERROR:
                 addAddressError(services.getErrorMessage());
                 break;
+            case ServicesEvent.SERVICES_ORDER_SUCCESS:
+                orderSuccess(services.getOrder(), services.getErrorMessage());
+                break;
+            case ServicesEvent.SERVICES_ORDER_ERROR:
+                orderError(services.getErrorMessage());
+                break;
+        }
+    }
+
+    private void orderError(String errorMessage) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.enabledInputs();
+            mView.showOrderErrorMessage(errorMessage);
+        }
+    }
+
+    private void orderSuccess(Pedido order, String message) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.enabledInputs();
+            mView.providerOrderSuccess(order, message);
         }
     }
 
@@ -110,7 +152,7 @@ public class ServicesPresenter implements IServicesPresenter {
     }
 
     private void addAddressSuccess(String message) {
-        if(mView != null) {
+        if (mView != null) {
             mView.hideProgress();
             mView.addAddressSuccess(message);
         }
