@@ -21,4 +21,6 @@ public interface IServicesPresenter {
     void handleOrder(String vehicleId, String serviceId, double latitude, double longitude, String scheduleDate, String scheduleTime, String description);
 
     void handleGetSupplier(String orderId);
+
+    void handleSupplierLocation(String supplierId);
 }

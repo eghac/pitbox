@@ -1,6 +1,7 @@
 package com.bzgroup.pitboxauxiliovehicular.services;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Proveedor;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
@@ -37,6 +39,7 @@ public class ServicesRepository implements IServicesRepository {
     private static final String URL_SERVICES = GLOBAL_URL + "categorias/";
     private static final String URL_ORDER = GLOBAL_URL + "pedidos";
     private static final String URL_ORDER_GET_SUPPLIER = GLOBAL_URL + "pedidos/";
+    private static final String URL_ORDER_GET_SUPPLIER_LOCATION = GLOBAL_URL + "proveedores/";
     private Context mContext;
 
     public ServicesRepository(Context context) {
@@ -232,6 +235,90 @@ public class ServicesRepository implements IServicesRepository {
 
     private void loadRequestOrderGetSupplier(JSONObject response) {
         Log.d(TAG, "loadRequestOrderGetSupplier: " + response.toString());
+        try {
+            JSONObject jsonObject = response.getJSONObject("data");
+            String supplierId = jsonObject.getString("proveedor_id");
+            String orderId = jsonObject.getString("id");
+            if (supplierId == null || supplierId.equals("null")) {
+                Handler mHandler = new Handler();
+                mHandler = new Handler();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestGetSupplier(orderId);
+                    }
+                }, 10000);
+            } else {
+                // SERVICES_ORDER_GET_SUPPLIER_SUCCESS
+                // connecting with your provider
+                postEventOrderGetSupplier(ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_SUCCESS, supplierId, "Conectando con el proveedor...");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            postEventError(ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void handleSupplierLocation(String supplierId) {
+        requestSupplierLocation(supplierId);
+    }
+
+    private void requestSupplierLocation(String supplierId) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, URL_ORDER_GET_SUPPLIER_LOCATION + supplierId + "/ubicacion", null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            switch (response.getInt("status")) {
+                                case 200:
+                                    loadRequestOrderGetSupplierLocation(response);
+                                    break;
+                                case 422:
+                                    postEventOrder(ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR, response.getString("message"));
+                                    break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            postEvent(ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR, null, null, null, null, e.getMessage());
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        postEvent(ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR, null, null, null, null, error.getMessage());
+                    }
+                }
+        );
+        SingletonVolley.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void loadRequestOrderGetSupplierLocation(JSONObject response) {
+        try {
+            JSONObject object = response.getJSONObject("data");
+            JSONObject photo = object.getJSONObject("foto");
+            Proveedor supplier = new Proveedor(
+                    object.getString("id"),
+                    object.getString("nombre_perfil"),
+                    object.getString("latitud"),
+                    object.getString("longitud"),
+                    photo.getString("url"));
+            postEventOrderGetSupplierLocation(ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_SUCCESS, supplier, response.getString("message"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            postEventOrder(ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR, e.getMessage());
+        }
+    }
+
+    private void postEventOrderGetSupplierLocation(int type, Proveedor supplier, String message) {
+        postEventSupplier(type, supplier, message);
+    }
+
+    private void postEventOrderGetSupplier(int type, String supplierId, String message) {
+        postEvent(type, null, null, null, null, supplierId, message);
     }
 
     private void requestOrder(String userId, String vehicleId, String serviceId, double latitude, double longitude, String scheduleDate, String scheduleTime, String description) {
@@ -420,9 +507,39 @@ public class ServicesRepository implements IServicesRepository {
         postEvent(eventType, null, null, addresses, null, null);
     }
 
+    private static void postEventSupplier(int type, Proveedor supplier, String errorMessage) {
+        ServicesEvent servicesEventEvent = new ServicesEvent();
+        servicesEventEvent.setEventType(type);
+        if (supplier != null)
+            servicesEventEvent.setSupplier(supplier);
+        if (errorMessage != null)
+            servicesEventEvent.setErrorMessage(errorMessage);
+        EventBus eventBus = GreenRobotEventBus.getInstance();
+        eventBus.post(servicesEventEvent);
+    }
+
     private static void postEvent(int type, List<Vehicle> myVehicles, List<Service> services, List<Address> addresses, Pedido order, String errorMessage) {
         ServicesEvent servicesEventEvent = new ServicesEvent();
         servicesEventEvent.setEventType(type);
+        if (order != null)
+            servicesEventEvent.setOrder(order);
+        if (addresses != null)
+            servicesEventEvent.setAddresses(addresses);
+        if (myVehicles != null)
+            servicesEventEvent.setMyVehicles(myVehicles);
+        if (services != null)
+            servicesEventEvent.setServices(services);
+        if (errorMessage != null)
+            servicesEventEvent.setErrorMessage(errorMessage);
+        EventBus eventBus = GreenRobotEventBus.getInstance();
+        eventBus.post(servicesEventEvent);
+    }
+
+    private static void postEvent(int type, List<Vehicle> myVehicles, List<Service> services, List<Address> addresses, Pedido order, String supplierId, String errorMessage) {
+        ServicesEvent servicesEventEvent = new ServicesEvent();
+        servicesEventEvent.setEventType(type);
+        if (supplierId != null)
+            servicesEventEvent.setSupplierId(supplierId);
         if (order != null)
             servicesEventEvent.setOrder(order);
         if (addresses != null)

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Proveedor;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.lib.EventBus;
 import com.bzgroup.pitboxauxiliovehicular.lib.GreenRobotEventBus;
@@ -88,6 +89,11 @@ public class ServicesPresenter implements IServicesPresenter {
         mRepository.handleGetSupplier(orderId);
     }
 
+    @Override
+    public void handleSupplierLocation(String supplierId) {
+        mRepository.handleSupplierLocation(supplierId);
+    }
+
     @Subscribe
     @Override
     public void onEventMainThread(ServicesEvent services) {
@@ -125,6 +131,36 @@ public class ServicesPresenter implements IServicesPresenter {
             case ServicesEvent.SERVICES_ORDER_ERROR:
                 orderError(services.getErrorMessage());
                 break;
+            case ServicesEvent.SERVICES_ORDER_GET_SUPPLIER_SUCCESS:
+                orderGetSupplierSuccess(services.getSupplierId(), services.getErrorMessage());
+                break;
+            case ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_SUCCESS:
+                orderGetLocationSupplierSuccess(services.getSupplier(), services.getErrorMessage());
+                break;
+            case ServicesEvent.SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR:
+                orderGetLocationSupplierError(services.getErrorMessage());
+                break;
+        }
+    }
+
+    private void orderGetLocationSupplierError(String errorMessage) {
+        if (mView != null) {
+            mView.showMessageGetLocationSupplierError(errorMessage);
+        }
+    }
+
+    private void orderGetLocationSupplierSuccess(Proveedor supplier, String message) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.hideMessageSupplierAcceptedRequest(message);
+            mView.showContainerSupplierOnTheWay(supplier);
+        }
+    }
+
+    private void orderGetSupplierSuccess(String supplierId, String message) {
+        if (mView != null) {
+            mView.hideProgress();
+            mView.showMessageSupplierAcceptedRequest(supplierId, message);
         }
     }
 

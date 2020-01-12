@@ -45,6 +45,7 @@ import com.bzgroup.pitboxauxiliovehicular.addvehicle.ui.AddVehicleActivity;
 import com.bzgroup.pitboxauxiliovehicular.dialogs.DeniedLocationPersmissionDialogFragment;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Proveedor;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 import com.bzgroup.pitboxauxiliovehicular.services.IServicesPresenter;
 import com.bzgroup.pitboxauxiliovehicular.services.ServicesPresenter;
@@ -148,6 +149,8 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     @BindView(R.id.bottom_sheet_finding_supplier)
     ConstraintLayout bottom_sheet_finding_supplier;
     private BottomSheetBehavior bottomSheetBehaviorFindingSupplier;
+    @BindView(R.id.bottom_sheet_finding_supplier_title)
+    TextView bottom_sheet_finding_supplier_title;
 
     private String categorieId;
     private boolean isSchedule;
@@ -885,6 +888,12 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
+    public void showMessageSupplierAcceptedRequest(String supplierId, String message) {
+        bottom_sheet_finding_supplier_title.setText(message);
+        mPresenter.handleSupplierLocation(supplierId);
+    }
+
+    @Override
     public void providerOrderSuccess(Pedido order, String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         mPresenter.handleGetSupplier(order.getId());
@@ -989,5 +998,23 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), "DeniedLocationPersmissionDialogFragment");
         dialog.setCancelable(false);
+    }
+
+    @Override
+    public void hideMessageSupplierAcceptedRequest(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (bottomSheetBehaviorFindingSupplier.getState() == BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    @Override
+    public void showContainerSupplierOnTheWay(Proveedor supplier) {
+        Log.d(TAG, "showContainerSupplierOnTheWay: " + supplier);
+        Toast.makeText(this, supplier.getNombre_perfil() + " en camino", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessageGetLocationSupplierError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 }

@@ -3,6 +3,7 @@ package com.bzgroup.pitboxauxiliovehicular.services.event;
 import com.bzgroup.pitboxauxiliovehicular.entities.Address;
 import com.bzgroup.pitboxauxiliovehicular.entities.Service;
 import com.bzgroup.pitboxauxiliovehicular.entities.order.Pedido;
+import com.bzgroup.pitboxauxiliovehicular.entities.order.Proveedor;
 import com.bzgroup.pitboxauxiliovehicular.entities.vehicle.Vehicle;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public class ServicesEvent {
     public static final int SERVICES_ORDER_GET_SUPPLIER_ERROR = 14;
     public static final int SERVICES_ORDER_GET_SUPPLIER_SUCCESS = 15;
     public static final int SERVICES_ORDER_GET_SUPPLIER_EMPTY = 16;
+    public static final int SERVICES_ORDER_GET_LOCATION_SUPPLIER_SUCCESS = 17;
+    public static final int SERVICES_ORDER_GET_LOCATION_SUPPLIER_ERROR = 18;
 
     private int eventType;
     private String errorMessage;
@@ -34,6 +37,24 @@ public class ServicesEvent {
     private List<Service> services;
     private List<Address> addresses;
     private Pedido order;
+    private String supplierId;
+    private Proveedor supplier;
+
+    public Proveedor getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Proveedor supplier) {
+        this.supplier = supplier;
+    }
+
+    public String getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(String supplierId) {
+        this.supplierId = supplierId;
+    }
 
     public Pedido getOrder() {
         return order;
