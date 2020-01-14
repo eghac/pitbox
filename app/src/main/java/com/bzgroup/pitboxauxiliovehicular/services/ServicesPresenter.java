@@ -154,6 +154,7 @@ public class ServicesPresenter implements IServicesPresenter {
             mView.hideProgress();
             mView.hideMessageSupplierAcceptedRequest(message);
             mView.showContainerSupplierOnTheWay(supplier);
+            mView.showClientAndSupplierLocationOnMap(supplier);
         }
     }
 

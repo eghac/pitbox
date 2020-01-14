@@ -69,6 +69,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -79,6 +82,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -86,6 +90,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ServicesActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, LocationListener, DeniedLocationPersmissionDialogFragment.DeniedLocationPersmissionDialogFragmentListener, IOnItemClickListener, AdapterView.OnItemSelectedListener, IServicesView, ScheduleBottomSheetDialog.ScheduleBottomSheetDialogListener, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraMoveStartedListener, View.OnClickListener, MyVehiclesEmptyBottomSheetDialog.MyVehiclesEmptyBottomSheetDialogListener {
 
@@ -152,6 +157,19 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
     @BindView(R.id.bottom_sheet_finding_supplier_title)
     TextView bottom_sheet_finding_supplier_title;
 
+    // Bottom Sheet Supplier on the way
+    @BindView(R.id.bottom_sheet_supplier_on_the_way)
+    ConstraintLayout bottom_sheet_supplier_on_the_way;
+    private BottomSheetBehavior bottomSheetBehaviorSupplierOnTheWay;
+    @BindView(R.id.bottom_sheet_supplier_detail_photo)
+    CircleImageView bottom_sheet_supplier_detail_photo;
+    @BindView(R.id.bottom_sheet_supplier_detail_name)
+    TextView bottom_sheet_supplier_detail_name;
+    @BindView(R.id.bottom_sheet_supplier_detail_distance)
+    TextView bottom_sheet_supplier_detail_distance;
+    @BindView(R.id.bottom_sheet_supplier_detail_distance_cost)
+    TextView bottom_sheet_supplier_detail_distance_cost;
+
     private String categorieId;
     private boolean isSchedule;
     private IServicesPresenter mPresenter;
@@ -169,6 +187,7 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_set_location);
         bottomSheetBehaviorAddAddress = BottomSheetBehavior.from(bottom_sheet_add_address);
         bottomSheetBehaviorFindingSupplier = BottomSheetBehavior.from(bottom_sheet_finding_supplier);
+        bottomSheetBehaviorSupplierOnTheWay = BottomSheetBehavior.from(bottom_sheet_supplier_on_the_way);
         setupSheetBehavior();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getWindow().getDecorView().setSystemUiVisibility(
@@ -261,6 +280,34 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
                 switch (i) {
                     case BottomSheetBehavior.STATE_DRAGGING:
                         bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+//                        btnBottomSheet.setText("Close Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+//                        btnBottomSheet.setText("Expand Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+                Log.d(TAG, "onSlide: ");
+            }
+        });
+        bottomSheetBehaviorSupplierOnTheWay.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+                Log.d(TAG, "onStateChanged: " + i);
+                switch (i) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        bottomSheetBehaviorSupplierOnTheWay.setState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
@@ -1007,14 +1054,53 @@ public class ServicesActivity extends AppCompatActivity implements OnMapReadyCal
             bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+
+    private HashMap<String, Marker> mMarkers = new HashMap<>();
+
     @Override
     public void showContainerSupplierOnTheWay(Proveedor supplier) {
-        Log.d(TAG, "showContainerSupplierOnTheWay: " + supplier);
+        Log.d(TAG, "showContainerSupplierOnTheWay: " + supplier.toString());
         Toast.makeText(this, supplier.getNombre_perfil() + " en camino", Toast.LENGTH_SHORT).show();
+        // 1. Mostrar el container del proveedor
+        // 2. Mostrar los 2 puntos (cliente-proveedor) en el mapa
+        // 3. Hacer una petición cada 10seg para obtener la ubicación del proveedor mandando el supplierId
+        if (bottomSheetBehaviorSupplierOnTheWay.getState() != BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehaviorSupplierOnTheWay.setState(BottomSheetBehavior.STATE_EXPANDED);
+        if (bottomSheetBehaviorFindingSupplier.getState() == BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehaviorFindingSupplier.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        Location locationA = new Location("customer");
+        Location locationB = new Location(supplier.getId());
+//        locationA.setLatitude(currentLocationCameraIdle.);
     }
 
     @Override
     public void showMessageGetLocationSupplierError(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showClientAndSupplierLocationOnMap(Proveedor supplier) {
+        String supplierId = supplier.getId();
+        double lat = Double.valueOf(supplier.getLatitud());
+        double lng = Double.valueOf(supplier.getLongitud());
+        LatLng supplierLocation = new LatLng(lat, lng);
+//        if (!mMarkers.containsKey(supplierId)) {
+//            mMarkers.put(supplierId, );
+//        } else {
+//            mMarkers.get(supplierId).setPosition(supplierLocation);
+//        }
+        mMap.addMarker(new MarkerOptions().title(supplierId).position(supplierLocation));
+        mMap.addMarker(new MarkerOptions().title("clientId").position(currentLocationCameraIdle));
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//        for (Marker marker : mMarkers.values()) {
+//            builder.include(marker.getPosition());
+//        }
+        if (currentLocationCameraIdle != null) {
+            builder.include(currentLocationCameraIdle);
+            builder.include(supplierLocation);
+        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+        // volver a hacer la petición cada 10seg
     }
 }

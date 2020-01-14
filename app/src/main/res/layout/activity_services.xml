@@ -32,6 +32,8 @@
 
     <include layout="@layout/activity_services_bottom_sheet_finding_supplier" />
 
+    <include layout="@layout/activity_services_bottom_sheet_supplier_on_the_way" />
+
     <fragment
         android:id="@+id/map_sec"
         android:name="com.google.android.gms.maps.SupportMapFragment"

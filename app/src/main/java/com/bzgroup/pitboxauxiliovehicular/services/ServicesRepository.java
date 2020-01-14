@@ -1,6 +1,7 @@
 package com.bzgroup.pitboxauxiliovehicular.services;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -41,9 +42,11 @@ public class ServicesRepository implements IServicesRepository {
     private static final String URL_ORDER_GET_SUPPLIER = GLOBAL_URL + "pedidos/";
     private static final String URL_ORDER_GET_SUPPLIER_LOCATION = GLOBAL_URL + "proveedores/";
     private Context mContext;
+    private AppPreferences mPreferences;
 
     public ServicesRepository(Context context) {
         mContext = context;
+        mPreferences = AppPreferences.getInstance(mContext);
     }
 
     @Override
@@ -383,6 +386,21 @@ public class ServicesRepository implements IServicesRepository {
                     data.getString("created_at"),
                     data.getString("updated_at")
             );
+            mPreferences.writeString(AppPreferences.Keys.ORDER_ID, order.getId());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_VEHICLE_ID, order.getVehiculo_id());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_SERVICE_ID, order.getServicio_id());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_LATITUDE, order.getLatitud());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_LONGITUDE, order.getLongitud());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_SCHEDULE_DATE, order.getFecha_programacion());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_SCHEDULE_TIME, order.getHora_programacion());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_STATE, order.getEstado());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_DESCRIPTION, order.getDescripcion());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_INIT_DATE, order.getFecha_inicio());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_INIT_TIME, order.getHora_inicio());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_BASE_PRICE, order.getPrecio_base());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_TOTAL_PRICE, order.getPrecio_total());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_CREATED_AT, order.getCreated_at());
+            mPreferences.writeString(AppPreferences.Keys.ORDER_UPDATED_AT, order.getUpdated_at());
             postEventOrder(ServicesEvent.SERVICES_ORDER_SUCCESS, order, response.getString("message"));
         } catch (JSONException e) {
             e.printStackTrace();

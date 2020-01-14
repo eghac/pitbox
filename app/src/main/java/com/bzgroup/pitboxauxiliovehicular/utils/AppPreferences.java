@@ -25,6 +25,23 @@ public class AppPreferences {
         public static final String USER_LAT_LOCATION = "USER_LAT_LOCATION";
         public static final String USER_LNG_LOCATION = "USER_LNG_LOCATION";
         public static final String USER_SCHEDULE_ORDER = "USER_SCHEDULE_ORDER";
+
+        // ORDER
+        public static final String ORDER_ID = "ORDER_ID";
+        public static final String ORDER_VEHICLE_ID = "ORDER_VEHICLE_ID";
+        public static final String ORDER_SERVICE_ID = "ORDER_SERVICE_ID";
+        public static final String ORDER_LATITUDE = "ORDER_LATITUDE";
+        public static final String ORDER_LONGITUDE = "ORDER_LONGITUDE";
+        public static final String ORDER_SCHEDULE_DATE = "ORDER_SCHEDULE_DATE";
+        public static final String ORDER_SCHEDULE_TIME = "ORDER_SCHEDULE_TIME";
+        public static final String ORDER_STATE = "ORDER_STATE";
+        public static final String ORDER_DESCRIPTION = "ORDER_DESCRIPTION";
+        public static final String ORDER_INIT_DATE = "ORDER_INIT_DATE";
+        public static final String ORDER_INIT_TIME = "ORDER_INIT_TIME";
+        public static final String ORDER_BASE_PRICE = "ORDER_BASE_PRICE";
+        public static final String ORDER_TOTAL_PRICE = "ORDER_TOTAL_PRICE";
+        public static final String ORDER_CREATED_AT = "ORDER_CREATED_AT";
+        public static final String ORDER_UPDATED_AT = "ORDER_UPDATED_AT";
     }
 
     private static final String SETTINGS_NAME = "default_settings_app";

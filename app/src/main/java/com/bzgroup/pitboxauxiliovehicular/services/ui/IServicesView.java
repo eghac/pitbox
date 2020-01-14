@@ -53,4 +53,6 @@ public interface IServicesView {
     void showContainerSupplierOnTheWay(Proveedor supplier);
 
     void showMessageGetLocationSupplierError(String errorMessage);
+
+    void showClientAndSupplierLocationOnMap(Proveedor supplier);
 }
